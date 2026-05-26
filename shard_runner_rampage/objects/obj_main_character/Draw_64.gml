@@ -74,4 +74,95 @@ if (global.equipped_weapon != noone)
     draw_set_colour(c_white);
 }
 
+// Press V to collect weapon gui
+var touching_weapon = false;
 
+if (instance_place(x, y, obj_pistol_item) != noone)
+{
+    touching_weapon = true;
+}
+
+if (instance_place(x, y, obj_rifle_item) != noone)
+{
+    touching_weapon = true;
+}
+
+if (touching_weapon)
+{
+    var gui_w = display_get_gui_width();
+    var gui_h = display_get_gui_height();
+
+    var box_w = 320;
+    var box_h = 58;
+
+    var box_x = gui_w / 2 - box_w / 2;
+    var box_y = gui_h - 130;
+
+    // Background
+    draw_set_alpha(0.75);
+    draw_set_colour(c_black);
+    draw_roundrect(box_x, box_y, box_x + box_w, box_y + box_h, false);
+
+    // Border
+    draw_set_alpha(1);
+    draw_set_colour(c_white);
+    draw_roundrect(box_x, box_y, box_x + box_w, box_y + box_h, true);
+
+    // Key box
+    draw_set_colour(c_yellow);
+    draw_roundrect(box_x + 18, box_y + 12, box_x + 58, box_y + 46, false);
+
+    draw_set_colour(c_black);
+    draw_text(box_x + 32, box_y + 20, "V");
+
+    // Text
+    draw_set_colour(c_white);
+    draw_text(box_x + 78, box_y + 20, "TO COLLECT WEAPON");
+
+    // Reset
+    draw_set_alpha(1);
+    draw_set_colour(c_white);
+}
+// =====================================
+// COLLECT WEAPON SUCCESS GUI
+// =====================================
+
+if (collect_message_timer > 0)
+{
+    var gui_w = display_get_gui_width();
+
+    var box_w = 430;
+    var box_h = 60;
+
+    var box_x = gui_w / 2 - box_w / 2;
+    var box_y = 90;
+
+    var fade = collect_message_timer / 120;
+
+    // Background box
+    draw_set_alpha(fade * 0.85);
+    draw_set_colour(c_black);
+    draw_roundrect(box_x, box_y, box_x + box_w, box_y + box_h, false);
+
+    // Green border
+    draw_set_alpha(fade);
+    draw_set_colour(c_lime);
+    draw_roundrect(box_x, box_y, box_x + box_w, box_y + box_h, true);
+
+    // Message text
+    draw_set_colour(c_white);
+    draw_set_halign(fa_center);
+    draw_set_valign(fa_middle);
+
+    draw_text(
+        gui_w / 2,
+        box_y + box_h / 2,
+        "COLLECTED WEAPON SUCCESSFULLY!"
+    );
+
+    // Reset draw settings
+    draw_set_alpha(1);
+    draw_set_colour(c_white);
+    draw_set_halign(fa_left);
+    draw_set_valign(fa_top);
+}

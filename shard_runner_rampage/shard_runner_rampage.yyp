@@ -3,6 +3,7 @@
   "resourceVersion": "1.6",
   "name": "shard_runner_rampage",
   "resources": [
+    {"id":{"name":"Sprite11","path":"sprites/Sprite11/Sprite11.yy",},"order":10,},
     {"id":{"name":"spr_rifle","path":"sprites/spr_rifle/spr_rifle.yy",},"order":8,},
     {"id":{"name":"obj_main_character","path":"objects/obj_main_character/obj_main_character.yy",},"order":0,},
     {"id":{"name":"obj_bullet","path":"objects/obj_bullet/obj_bullet.yy",},"order":4,},

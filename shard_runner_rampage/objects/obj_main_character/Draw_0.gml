@@ -17,7 +17,7 @@ if (global.equipped_weapon != noone)
     {
         weapon_sprite = spr_rifle;
     }
-
+	
 
     // Draw the correct weapon sprite
     if (weapon_sprite != noone)

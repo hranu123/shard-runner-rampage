@@ -1,13 +1,10 @@
 {
   "resourceType": "GMObject",
   "resourceVersion": "1.0",
-  "name": "obj_character_blocker",
-  "spriteId": {
-    "name": "spr_character_blocker",
-    "path": "sprites/spr_character_blocker/spr_character_blocker.yy",
-  },
-  "solid": true,
-  "visible": false,
+  "name": "obj_shotgun",
+  "spriteId": null,
+  "solid": false,
+  "visible": true,
   "managed": true,
   "spriteMaskId": null,
   "persistent": false,

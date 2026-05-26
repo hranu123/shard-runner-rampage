@@ -1,10 +1,10 @@
 {
   "resourceType": "GMObject",
   "resourceVersion": "1.0",
-  "name": "obj_bullet",
+  "name": "obj_rifle_bullet",
   "spriteId": {
-    "name": "spr_bullet",
-    "path": "sprites/spr_bullet/spr_bullet.yy",
+    "name": "spr_rifle_bullet",
+    "path": "sprites/spr_rifle_bullet/spr_rifle_bullet.yy",
   },
   "solid": false,
   "visible": true,

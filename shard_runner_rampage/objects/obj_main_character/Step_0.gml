@@ -1,7 +1,6 @@
 // =====================================
 // INVENTORY + WEAPON SYSTEM
 // PISTOL + RIFLE + AMMO + COLLECT MESSAGE
-// obj_main_character - STEP EVENT
 // =====================================
 
 
@@ -46,13 +45,18 @@ if (keyboard_check_pressed(ord("R")) && !is_reloading)
     if (global.equipped_weapon == "pistol" && pistol_current_ammo < pistol_max_ammo)
     {
         is_reloading = true;
-        reload_timer = reload_time;
+        reload_timer = pistol_reload_time;
     }
 
     if (global.equipped_weapon == "rifle" && rifle_current_ammo < rifle_max_ammo)
     {
         is_reloading = true;
-        reload_timer = reload_time;
+        reload_timer = rifle_reload_time;
+    }
+	 if (global.equipped_weapon == "shotgun" && shotgun_current_ammo <shotgun_max_ammo)
+    {
+        is_reloading = true;
+        reload_timer = shotgun_reload_time;
     }
 }
 
@@ -73,9 +77,15 @@ if (is_reloading)
             rifle_current_ammo = rifle_max_ammo;
         }
 
+        if (global.equipped_weapon == "shotgun")
+        {
+            shotgun_current_ammo = shotgun_max_ammo;
+        }
+
         is_reloading = false;
     }
 }
+
 
 
 // COLLECT PISTOL WITH V
@@ -128,6 +138,30 @@ if (rifle != noone && keyboard_check_pressed(ord("V")))
         }
     }
 }
+// COLLECT SHOTGUN WITH V
+var shotgun = instance_place(x, y, obj_shotgun_item);
+
+if (shotgun != noone && keyboard_check_pressed(ord("V")))
+{
+    for (var j = 0; j < 5; j++)
+    {
+        if (global.weapon_inventory[j] == noone)
+        {
+            global.weapon_inventory[j] = "shotgun";
+            global.selected_weapon_slot = j;
+            global.equipped_weapon = "shotgun";
+
+            collect_message_timer = 120;
+
+            with (shotgun)
+            {
+                instance_destroy();
+            }
+
+            break;
+        }
+    }
+}
 
 
 // EQUIP WEAPON WITH NUMBER KEYS
@@ -159,7 +193,7 @@ if (global.equipped_weapon != noone && !is_reloading)
     {
         if (mouse_check_button_pressed(mb_left) && pistol_current_ammo > 0)
         {
-            var bullet = instance_create_layer(bullet_x, bullet_y, layer, obj_bullet);
+            var bullet = instance_create_layer(bullet_x, bullet_y, layer, obj_pistol_bullet);
 
             bullet.direction = dir;
             bullet.speed = 12;
@@ -174,13 +208,25 @@ if (global.equipped_weapon != noone && !is_reloading)
     {
         if (mouse_check_button(mb_left) && rifle_fire_cooldown <= 0 && rifle_current_ammo > 0)
         {
-            var bullet = instance_create_layer(bullet_x, bullet_y, layer, obj_bullet);
+            var bullet = instance_create_layer(bullet_x, bullet_y, layer, obj_rifle_bullet);
 
             bullet.direction = dir;
             bullet.speed = 18;
 
             rifle_current_ammo--;
             rifle_fire_cooldown = 6;
+        }
+    }// PISTOL - one shot per click
+    if (global.equipped_weapon == "shotgun")
+    {
+        if (mouse_check_button_pressed(mb_left) && shotgun_current_ammo > 0)
+        {
+            var bullet = instance_create_layer(bullet_x, bullet_y, layer, obj_shotgun_bullet);
+
+            bullet.direction = dir;
+            bullet.speed = 12;
+
+           shotgun_current_ammo--;
         }
     }
 }

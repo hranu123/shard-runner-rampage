@@ -20,10 +20,14 @@ pistol_current_ammo = pistol_max_ammo;
 // Rifle ammo
 rifle_max_ammo = 30;
 rifle_current_ammo = rifle_max_ammo;
-
+// Shotgun ammo
+shotgun_max_ammo = 5
+shotgun_current_ammo = shotgun_max_ammo
 // Reload system
 is_reloading = false;
 reload_timer = 0;
-reload_time = 60; // 60 steps = about 1 second
+pistol_reload_time = 30;
+rifle_reload_time = 60;
+shotgun_reload_time = 90;
 // Weapon collect message
 collect_message_timer = 0;

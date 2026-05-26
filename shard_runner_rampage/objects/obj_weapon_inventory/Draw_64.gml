@@ -32,6 +32,10 @@ for (var i = 0; i < 5; i++)
     {
         weapon_sprite = spr_rifle;
     }
+	  if (global.weapon_inventory[i] == "shotgun")
+    {
+        weapon_sprite = spr_shotgun;
+    }
 
     // Draw weapon icon
     if (weapon_sprite != noone)

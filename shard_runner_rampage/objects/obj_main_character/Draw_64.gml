@@ -22,6 +22,12 @@ if (global.equipped_weapon != noone)
         ammo_current = rifle_current_ammo;
         ammo_max = rifle_max_ammo;
         weapon_name = "RIFLE";
+    } 
+	if (global.equipped_weapon == "shotgun")
+    {
+        ammo_current = shotgun_current_ammo;
+        ammo_max = shotgun_max_ammo;
+        weapon_name = "SHOTGUN";
     }
 
     // GUI position
@@ -83,6 +89,10 @@ if (instance_place(x, y, obj_pistol_item) != noone)
 }
 
 if (instance_place(x, y, obj_rifle_item) != noone)
+{
+    touching_weapon = true;
+}
+if (instance_place(x, y, obj_shotgun_item) != noone)
 {
     touching_weapon = true;
 }

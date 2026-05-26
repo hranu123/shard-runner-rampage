@@ -1,3 +1,6 @@
+// Only create inventory once
+if (!variable_global_exists("weapon_inventory"))
+{
 // Create 5 empty inventory slots
 // noone means the slot is empty
 global.weapon_inventory = [noone, noone, noone, noone, noone];
@@ -8,5 +11,5 @@ global.selected_weapon_slot = -1;
 
 // The actual weapon currently equipped
 global.equipped_weapon = noone;
-
+}
 

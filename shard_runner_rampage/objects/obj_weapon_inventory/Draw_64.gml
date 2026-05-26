@@ -8,34 +8,48 @@ for (var i = 0; i < 5; i++)
     var slot_x = start_x + i * (slot_size + gap);
     var slot_y = start_y;
 
-    // Draw slot box first
+    // Draw slot box
     draw_set_colour(c_white);
     draw_rectangle(slot_x, slot_y, slot_x + slot_size, slot_y + slot_size, false);
 
-    // Draw selected highlight
+    // Highlight selected slot
     if (global.selected_weapon_slot == i)
     {
         draw_set_colour(c_yellow);
         draw_rectangle(slot_x - 3, slot_y - 3, slot_x + slot_size + 3, slot_y + slot_size + 3, false);
+        draw_set_colour(c_white);
     }
 
-    // Draw weapon ABOVE the box
-    if (global.weapon_inventory[i] != noone)
+    // Convert weapon name into correct sprite
+    var weapon_sprite = noone;
+
+    if (global.weapon_inventory[i] == "pistol")
+    {
+        weapon_sprite = spr_pistol;
+    }
+
+    if (global.weapon_inventory[i] == "rifle")
+    {
+        weapon_sprite = spr_rifle;
+    }
+
+    // Draw weapon icon
+    if (weapon_sprite != noone)
     {
         draw_sprite_ext(
-            global.weapon_inventory[i],
+            weapon_sprite,
             0,
             slot_x + slot_size / 2,
             slot_y + slot_size / 2,
-            1,
-            1,
+            0.5,
+            0.5,
             0,
             c_white,
             1
         );
     }
 
-    // Draw slot number last
+    // Draw slot number
     draw_set_colour(c_white);
     draw_text(slot_x + 24, slot_y + 70, string(i + 1));
 }

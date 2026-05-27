@@ -71,8 +71,8 @@ if (global.equipped_weapon != noone)
     // Reload warning
     if (ammo_current <= 0)
     {
-        draw_set_colour(c_red);
-        draw_text(box_x + 125, box_y + 36, "RELOAD!");
+		draw_set_colour(c_red);
+        draw_text(box_x + 125, box_y + 36, "PRESS R TO RELOAD!");
     }
 
     // Reset drawing

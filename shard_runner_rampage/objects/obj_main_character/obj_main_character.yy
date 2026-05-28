@@ -3,8 +3,8 @@
   "resourceVersion": "1.0",
   "name": "obj_main_character",
   "spriteId": {
-    "name": "spr_main_character_down",
-    "path": "sprites/spr_main_character_down/spr_main_character_down.yy",
+    "name": "spr_main_character_down_fly",
+    "path": "sprites/spr_main_character_down_fly/spr_main_character_down_fly.yy",
   },
   "solid": false,
   "visible": true,

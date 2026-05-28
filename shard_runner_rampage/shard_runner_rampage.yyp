@@ -16,6 +16,7 @@
     {"id":{"name":"spr_character_blocker","path":"sprites/spr_character_blocker/spr_character_blocker.yy",},"order":4,},
     {"id":{"name":"obj_rifle","path":"objects/obj_rifle/obj_rifle.yy",},"order":7,},
     {"id":{"name":"obj_weapon_inventory","path":"objects/obj_weapon_inventory/obj_weapon_inventory.yy",},"order":3,},
+    {"id":{"name":"fnt_gun_ammo","path":"fonts/fnt_gun_ammo/fnt_gun_ammo.yy",},"order":0,},
     {"id":{"name":"spr_main_character_down","path":"sprites/spr_main_character_down/spr_main_character_down.yy",},"order":1,},
     {"id":{"name":"spr_rifle_item","path":"sprites/spr_rifle_item/spr_rifle_item.yy",},"order":9,},
     {"id":{"name":"spr_main_character_left","path":"sprites/spr_main_character_left/spr_main_character_left.yy",},"order":2,},

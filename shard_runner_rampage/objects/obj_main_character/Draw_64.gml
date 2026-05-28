@@ -1,4 +1,4 @@
-// =====================================
+ // =====================================
 // AMMO GUI
 // =====================================
 
@@ -47,11 +47,13 @@ if (global.equipped_weapon != noone)
     draw_rectangle(box_x, box_y, box_x + box_w, box_y + box_h, true);
 
     // Weapon name
-    draw_set_colour(c_white);
+    draw_set_font(fnt_gun_ammo)
+	draw_set_colour(c_white);
     draw_text(box_x + 16, box_y + 12, weapon_name);
 
     // Ammo number
-    draw_text(
+    draw_set_font(fnt_gun_ammo)
+	draw_text(
         box_x + 16,
         box_y + 36,
         "AMMO: " + string(ammo_current) + " / " + string(ammo_max)
@@ -71,8 +73,9 @@ if (global.equipped_weapon != noone)
     // Reload warning
     if (ammo_current <= 0)
     {
+		draw_set_font(fnt_gun_ammo)
 		draw_set_colour(c_red);
-        draw_text(box_x + 125, box_y + 36, "PRESS R TO RELOAD!");
+        draw_text(box_x + 115, box_y + 36, "R TO RELOAD!");
     }
 
     // Reset drawing

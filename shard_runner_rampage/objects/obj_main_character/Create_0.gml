@@ -9,6 +9,25 @@ var_walk_animation = 2.5;
 var_sprint_animation = 5;
 
 var_main_animation_speed = var_walk_animation;
+// =====================================
+// JUMP / FLY VARIABLES
+// =====================================
+
+is_jumping = false;
+is_flying = false;
+
+jump_z = 0;
+jump_timer = 0;
+jump_duration = 24;
+jump_height = 100
+
+space_hold_timer = 0;
+fly_hold_delay = 15
+
+fly_height = 35;
+fly_speed = 5;
+
+facing_dir = "down";
 
 global.player_sprinting = false;
 // Rifle automatic fire cooldown

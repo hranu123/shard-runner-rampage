@@ -1,5 +1,5 @@
-// Draw the character first
-draw_self();
+// Draw the character once, lifted when jumping/flying
+draw_sprite(sprite_index, image_index, x, y - jump_z);
 
 
 // Only draw a weapon if one is equipped

@@ -1,3 +1,84 @@
+// SAVE DIRECTION
+if (keyboard_check(ord("W"))) facing_dir = "up";
+if (keyboard_check(ord("S"))) facing_dir = "down";
+if (keyboard_check(ord("A"))) facing_dir = "left";
+if (keyboard_check(ord("D"))) facing_dir = "right";
+
+
+// SPACE HOLD TIMER
+if (keyboard_check(vk_space))
+{
+    space_hold_timer++;
+}
+else
+{
+    space_hold_timer = 0;
+}
+
+
+// START JUMP WHEN SPACE IS PRESSED ONCE
+if (keyboard_check_pressed(vk_space) && !is_jumping && !is_flying)
+{
+    is_jumping = true;
+    is_flying = false;
+
+    jump_timer = 0;
+}
+
+
+// NORMAL JUMP
+if (is_jumping && !is_flying)
+{
+    jump_timer++;
+
+    var progress = jump_timer / jump_duration;
+
+    jump_z = sin(progress * pi) * jump_height;
+
+    if (jump_timer >= jump_duration)
+    {
+        is_jumping = false;
+        jump_z = 0;
+    }
+}
+
+
+// TURN INTO FLYING ONLY IF SPACE IS HELD
+if (is_jumping && keyboard_check(vk_space) && space_hold_timer >= fly_hold_delay)
+{
+    is_jumping = false;
+    is_flying = true;
+
+    jump_z = fly_height;
+}
+
+
+// FLYING
+if (is_flying)
+{
+    jump_z = fly_height;
+
+    if (keyboard_check(ord("W"))) y -= fly_speed;
+    if (keyboard_check(ord("S"))) y += fly_speed;
+    if (keyboard_check(ord("A"))) x -= fly_speed;
+    if (keyboard_check(ord("D"))) x += fly_speed;
+
+    if (!keyboard_check(vk_space))
+    {
+        is_flying = false;
+        jump_z = 0;
+    }
+}
+
+
+// SPRITES
+if (is_jumping || is_flying)
+{
+    if (facing_dir == "up") sprite_index = spr_main_character_up_fly;
+    else if (facing_dir == "down") sprite_index = spr_main_character_down_fly;
+    else if (facing_dir == "left") sprite_index = spr_main_character_left_fly;
+    else if (facing_dir == "right") sprite_index = spr_main_character_right_fly;
+}
 // =====================================
 // INVENTORY + WEAPON SYSTEM
 // PISTOL + RIFLE + AMMO + COLLECT MESSAGE

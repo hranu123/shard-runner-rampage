@@ -1,15 +1,15 @@
 // Only create inventory once
 if (!variable_global_exists("weapon_inventory"))
 {
-// Create 5 empty inventory slots
-// noone means the slot is empty
-global.weapon_inventory = [noone, noone, noone, noone, noone];
+    // Create 5 inventory slots
+    global.weapon_inventory = [noone, noone, noone, noone, noone];
 
-// The currently selected weapon slot
-// -1 means no weapon is equipped
-global.selected_weapon_slot = -1;
+    // Put sword in slot 1 from the start of the game
+    global.weapon_inventory[0] = "sword";
 
-// The actual weapon currently equipped
-global.equipped_weapon = noone;
+    // Select slot 1
+    global.selected_weapon_slot = 0;
+
+    // Equip sword by default
+    global.equipped_weapon = "sword";
 }
-

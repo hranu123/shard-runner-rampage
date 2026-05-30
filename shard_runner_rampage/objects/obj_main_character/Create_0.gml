@@ -50,5 +50,35 @@ rifle_reload_time = 60;
 shotgun_reload_time = 90;
 // Weapon collect message
 collect_message_timer = 0;// MOVEMENT VARIABLES
+// Sword is always available in inventory
+global.weapon_inventory[0] = "sword";
+global.selected_weapon_slot = 0;
+global.equipped_weapon = "sword";
+
+// =====================================
+// SWORD SYSTEM
+// =====================================
+
+// Sword starts in inventory slot 1
+if (!variable_global_exists("weapon_inventory"))
+{
+    global.weapon_inventory = [noone, noone, noone, noone, noone];
+}
+
+global.weapon_inventory[0] = "sword";
+global.selected_weapon_slot = 0;
+global.equipped_weapon = "sword";
+
+// Sword attack settings
+is_sword_attacking = false;
+sword_attack_timer = 0;
+sword_attack_duration = 20;
+
+sword_attack_frame = 0;
+sword_attack_speed = 0.35;
+
+sword_damage = 1;
+sword_range = 36;
+
 
 

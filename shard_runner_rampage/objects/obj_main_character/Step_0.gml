@@ -311,3 +311,86 @@ if (global.equipped_weapon != noone && !is_reloading)
         }
     }
 }
+// =====================================
+// SWORD ATTACK
+// =====================================
+
+if (global.equipped_weapon == "sword")
+{
+    if (mouse_check_button_pressed(mb_left) && !is_sword_attacking)
+    {
+        is_sword_attacking = true;
+        sword_attack_timer = sword_attack_duration;
+
+        // Reset sword animation frame only once when attack begins
+        sword_attack_frame = 0;
+
+        var hit_x = x;
+        var hit_y = y;
+
+        if (facing_dir == "up")
+        {
+            hit_y = y - sword_range;
+        }
+        else if (facing_dir == "down")
+        {
+            hit_y = y + sword_range;
+        }
+        else if (facing_dir == "left")
+        {
+            hit_x = x - sword_range;
+        }
+        else if (facing_dir == "right")
+        {
+            hit_x = x + sword_range;
+        }
+
+        var enemy = instance_place(hit_x, hit_y, obj_enemy);
+
+        if (enemy != noone)
+        {
+            with (enemy)
+            {
+                hp -= other.sword_damage;
+
+                if (hp <= 0)
+                {
+                    instance_destroy();
+                }
+            }
+        }
+    }
+}
+
+
+// =====================================
+// SWORD ATTACK ANIMATION TIMER
+// =====================================
+
+if (is_sword_attacking)
+{
+    sword_attack_timer--;
+
+    var is_moving =
+        keyboard_check(ord("W")) ||
+        keyboard_check(ord("A")) ||
+        keyboard_check(ord("S")) ||
+        keyboard_check(ord("D"));
+
+    // Standing still = normal sword animation speed
+    if (!is_moving)
+    {
+        sword_attack_frame += sword_attack_speed;
+    }
+    // Moving = slower sword frame increase to prevent double-speed effect
+    else
+    {
+        sword_attack_frame += sword_attack_speed * 0.5;
+    }
+
+    if (sword_attack_timer <= 0)
+    {
+        is_sword_attacking = false;
+        sword_attack_frame = 0;
+    }
+}

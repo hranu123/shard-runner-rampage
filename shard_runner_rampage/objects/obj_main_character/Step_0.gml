@@ -81,7 +81,6 @@ if (is_jumping || is_flying)
 }
 // =====================================
 // INVENTORY + WEAPON SYSTEM
-// PISTOL + RIFLE + AMMO + COLLECT MESSAGE
 // =====================================
 
 
@@ -140,7 +139,11 @@ if (keyboard_check_pressed(ord("R")) && !is_reloading)
         reload_timer = shotgun_reload_time;
     }
 }
-
+if (global.equipped_weapon == "rpg" && rpg_current_ammo <rpg_max_ammo)
+    {
+        is_reloading = true;
+        reload_timer = rpg_reload_time;
+    }
 
 if (is_reloading)
 {
@@ -164,8 +167,17 @@ if (is_reloading)
         }
 
         is_reloading = false;
-    }
 }
+
+        if (global.equipped_weapon == "rpg")
+        {
+            rpg_current_ammo = rpg_max_ammo;
+        }
+
+        is_reloading = false;
+}
+
+
 
 
 
@@ -243,6 +255,30 @@ if (shotgun != noone && keyboard_check_pressed(ord("V")))
         }
     }
 }
+// COLLECT RPG WITH V
+var rpg = instance_place(x, y, obj_rpg_item);
+
+if (rpg != noone && keyboard_check_pressed(ord("V")))
+{
+    for (var j = 0; j < 5; j++)
+    {
+        if (global.weapon_inventory[j] == noone)
+        {
+            global.weapon_inventory[j] = "rpg";
+            global.selected_weapon_slot = j;
+            global.equipped_weapon = "rpg";
+
+            collect_message_timer = 120;
+
+            with (rpg)
+            {
+                instance_destroy();
+            }
+
+            break;
+        }
+    }
+}
 
 
 // EQUIP WEAPON WITH NUMBER KEYS
@@ -297,7 +333,8 @@ if (global.equipped_weapon != noone && !is_reloading)
             rifle_current_ammo--;
             rifle_fire_cooldown = 6;
         }
-    }// PISTOL - one shot per click
+    }
+	// SHOTGUN - one shot per click
     if (global.equipped_weapon == "shotgun")
     {
         if (mouse_check_button_pressed(mb_left) && shotgun_current_ammo > 0)
@@ -308,6 +345,19 @@ if (global.equipped_weapon != noone && !is_reloading)
             bullet.speed = 12;
 
            shotgun_current_ammo--;
+        }
+    }
+	// RPG - one shot per click
+    if (global.equipped_weapon == "rpg")
+    {
+        if (mouse_check_button_pressed(mb_left) && rpg_current_ammo > 0)
+        {
+            var bullet = instance_create_layer(bullet_x, bullet_y, layer, obj_rpg_bullet);
+
+            bullet.direction = dir;
+            bullet.speed = 12;
+
+           rpg_current_ammo--;
         }
     }
 }
@@ -321,7 +371,6 @@ if (global.equipped_weapon == "sword")
     {
         is_sword_attacking = true;
         sword_attack_timer = sword_attack_duration;
-
         // Reset sword animation frame only once when attack begins
         sword_attack_frame = 0;
 

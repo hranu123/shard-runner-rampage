@@ -36,6 +36,7 @@ for (var i = 0; i < 5; i++)
     if (global.weapon_inventory[i] == "pistol") weapon_sprite = spr_pistol;
     if (global.weapon_inventory[i] == "rifle") weapon_sprite = spr_rifle;
     if (global.weapon_inventory[i] == "shotgun") weapon_sprite = spr_shotgun;
+	if (global.weapon_inventory[i] == "rpg") weapon_sprite = spr_rpg;
 
     if (weapon_sprite != noone)
     {

@@ -1,5 +1,4 @@
 // =====================================
-// obj_main_character - DRAW GUI EVENT
 // AMMO GUI + COLLECT PROMPT + SUCCESS MESSAGE
 // =====================================
 
@@ -34,6 +33,13 @@ if (global.equipped_weapon != noone && global.equipped_weapon != "sword")
         ammo_max = shotgun_max_ammo;
         weapon_name = "SHOTGUN";
     }
+	else if (global.equipped_weapon == "rpg")
+    {
+        ammo_current = rpg_current_ammo;
+        ammo_max = rpg_max_ammo;
+        weapon_name = "RPG";
+    }
+
 
 
     // GUI position
@@ -154,6 +160,10 @@ if (instance_place(x, y, obj_rifle_item) != noone)
 }
 
 if (instance_place(x, y, obj_shotgun_item) != noone)
+{
+    touching_weapon = true;
+}
+if (instance_place(x, y, obj_rpg_item) != noone)
 {
     touching_weapon = true;
 }

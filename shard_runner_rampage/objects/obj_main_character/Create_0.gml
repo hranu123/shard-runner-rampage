@@ -1,3 +1,4 @@
+// MOVEMENT VARIABLES
 var_walk_speed = 3;
 
 var_main_sprint = 7;
@@ -28,28 +29,32 @@ fly_height = 35;
 fly_speed = 5;
 
 facing_dir = "down";
-
+// SPRINTING FEATURE
 global.player_sprinting = false;
+// WEAPON MECHANICS
 // Rifle automatic fire cooldown
 rifle_fire_cooldown = 0;
 // Pistol ammo
 pistol_max_ammo = 12;
 pistol_current_ammo = pistol_max_ammo;
-
 // Rifle ammo
 rifle_max_ammo = 30;
 rifle_current_ammo = rifle_max_ammo;
 // Shotgun ammo
-shotgun_max_ammo = 5
-shotgun_current_ammo = shotgun_max_ammo
+shotgun_max_ammo = 8;
+shotgun_current_ammo = shotgun_max_ammo;
+// Rpg ammo
+rpg_max_ammo = 5
+rpg_current_ammo = rpg_max_ammo
 // Reload system
 is_reloading = false;
 reload_timer = 0;
 pistol_reload_time = 30;
 rifle_reload_time = 60;
 shotgun_reload_time = 90;
+rpg_reload_time = 120
 // Weapon collect message
-collect_message_timer = 0;// MOVEMENT VARIABLES
+collect_message_timer = 0;
 // Sword is always available in inventory
 global.weapon_inventory[0] = "sword";
 global.selected_weapon_slot = 0;

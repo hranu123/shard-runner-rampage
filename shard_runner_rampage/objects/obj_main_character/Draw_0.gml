@@ -79,6 +79,7 @@ if (global.equipped_weapon != noone && global.equipped_weapon != "sword")
     if (global.equipped_weapon == "pistol") weapon_sprite = spr_pistol;
     if (global.equipped_weapon == "rifle") weapon_sprite = spr_rifle;
     if (global.equipped_weapon == "shotgun") weapon_sprite = spr_shotgun;
+	if (global.equipped_weapon == "rpg") weapon_sprite = spr_rpg;
 
     if (weapon_sprite != noone)
     {

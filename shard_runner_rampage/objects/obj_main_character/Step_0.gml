@@ -126,7 +126,7 @@ if (keyboard_check_pressed(ord("R")) && !is_reloading)
     {
         is_reloading = true;
         reload_timer = pistol_reload_time;
-    }
+}
 
     if (global.equipped_weapon == "rifle" && rifle_current_ammo < rifle_max_ammo)
     {
@@ -137,48 +137,39 @@ if (keyboard_check_pressed(ord("R")) && !is_reloading)
     {
         is_reloading = true;
         reload_timer = shotgun_reload_time;
-    }
-}
+} 
 if (global.equipped_weapon == "rpg" && rpg_current_ammo <rpg_max_ammo)
     {
         is_reloading = true;
         reload_timer = rpg_reload_time;
-    }
-
+}
+}
 if (is_reloading)
 {
     reload_timer--;
 
     if (reload_timer <= 0)
     {
-        if (global.equipped_weapon == "pistol")
+if (global.equipped_weapon == "pistol")
         {
             pistol_current_ammo = pistol_max_ammo;
         }
-
-        if (global.equipped_weapon == "rifle")
+if (global.equipped_weapon == "rifle")
         {
             rifle_current_ammo = rifle_max_ammo;
         }
-
-        if (global.equipped_weapon == "shotgun")
+if (global.equipped_weapon == "shotgun")
         {
             shotgun_current_ammo = shotgun_max_ammo;
         }
-
-        is_reloading = false;
-}
-
-        if (global.equipped_weapon == "rpg")
+if (global.equipped_weapon == "rpg")
         {
             rpg_current_ammo = rpg_max_ammo;
         }
 
         is_reloading = false;
 }
-
-
-
+}
 
 
 // COLLECT PISTOL WITH V

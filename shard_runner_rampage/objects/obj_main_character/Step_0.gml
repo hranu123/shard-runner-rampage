@@ -1,11 +1,108 @@
-// SAVE DIRECTION
-if (keyboard_check(ord("W"))) facing_dir = "up";
-if (keyboard_check(ord("S"))) facing_dir = "down";
-if (keyboard_check(ord("A"))) facing_dir = "left";
-if (keyboard_check(ord("D"))) facing_dir = "right";
+// =====================================
+// SAVE DIRECTION + MOVING CHECK
+// =====================================
+
+var moving = false;
+
+if (keyboard_check(ord("W")))
+{
+    facing_dir = "up";
+    moving = true;
+}
+
+if (keyboard_check(ord("S")))
+{
+    facing_dir = "down";
+    moving = true;
+}
+
+if (keyboard_check(ord("A")))
+{
+    facing_dir = "left";
+    moving = true;
+}
+
+if (keyboard_check(ord("D")))
+{
+    facing_dir = "right";
+    moving = true;
+}
 
 
+// =====================================
+// COOLDOWNS
+// =====================================
+
+if (jump_cooldown > 0) jump_cooldown--;
+if (fly_cooldown > 0) fly_cooldown--;
+if (sprint_cooldown > 0) sprint_cooldown--;
+
+if (is_flying && fly_timer > 0)
+{
+    fly_timer--;
+}
+
+
+// =====================================
+// SPRINT SYSTEM
+// Hold Shift while moving
+// =====================================
+
+is_sprinting = false;
+
+// Lock sprint if stamina is too low
+if (stamina_current <= sprint_min_stamina)
+{
+    sprint_locked = true;
+}
+
+// Unlock sprint only after stamina recovers enough
+if (stamina_current >= sprint_resume_stamina)
+{
+    sprint_locked = false;
+}
+
+// Sprint only if not locked
+if (
+    keyboard_check(vk_shift) &&
+    moving &&
+    !is_jumping &&
+    !is_flying &&
+    !sprint_locked &&
+    sprint_cooldown <= 0
+)
+{
+    is_sprinting = true;
+
+    var_main_speed = var_main_sprint;
+    var_main_animation_speed = var_sprint_animation;
+
+    stamina_current -= sprint_stamina_drain;
+}
+else
+{
+    is_sprinting = false;
+
+    var_main_speed = var_walk_speed;
+    var_main_animation_speed = var_walk_animation;
+}
+
+// If stamina hits 0 while sprinting, stop sprint and start cooldown
+if (stamina_current <= 0)
+{
+    stamina_current = 0;
+    is_sprinting = false;
+    sprint_locked = true;
+    sprint_cooldown = sprint_cooldown_time;
+
+    var_main_speed = var_walk_speed;
+    var_main_animation_speed = var_walk_animation;
+}
+
+// =====================================
 // SPACE HOLD TIMER
+// =====================================
+
 if (keyboard_check(vk_space))
 {
     space_hold_timer++;
@@ -16,17 +113,35 @@ else
 }
 
 
-// START JUMP WHEN SPACE IS PRESSED ONCE
-if (keyboard_check_pressed(vk_space) && !is_jumping && !is_flying)
-{
-    is_jumping = true;
-    is_flying = false;
+// =====================================
+// START JUMP
+// Tap Space = jump once
+// =====================================
 
-    jump_timer = 0;
+if (keyboard_check_pressed(vk_space))
+{
+    if (!is_jumping && !is_flying && jump_cooldown <= 0 && stamina_current >= jump_stamina_cost)
+    {
+        is_jumping = true;
+        is_flying = false;
+
+        jump_timer = 0;
+        jump_z = 0;
+
+        stamina_current -= jump_stamina_cost;
+        jump_cooldown = jump_cooldown_time;
+
+        // Stop sprinting when jump begins
+        is_sprinting = false;
+        var_main_speed = var_walk_speed;
+    }
 }
 
 
-// NORMAL JUMP
+// =====================================
+// JUMP ARC
+// =====================================
+
 if (is_jumping && !is_flying)
 {
     jump_timer++;
@@ -43,35 +158,97 @@ if (is_jumping && !is_flying)
 }
 
 
-// TURN INTO FLYING ONLY IF SPACE IS HELD
-if (is_jumping && keyboard_check(vk_space) && space_hold_timer >= fly_hold_delay)
+// =====================================
+// START FLYING
+// Hold Space after jump = fly
+// =====================================
+
+if (is_jumping && keyboard_check(vk_space))
 {
-    is_jumping = false;
-    is_flying = true;
-
-    jump_z = fly_height;
-}
-
-
-// FLYING
-if (is_flying)
-{
-    jump_z = fly_height;
-
-    if (keyboard_check(ord("W"))) y -= fly_speed;
-    if (keyboard_check(ord("S"))) y += fly_speed;
-    if (keyboard_check(ord("A"))) x -= fly_speed;
-    if (keyboard_check(ord("D"))) x += fly_speed;
-
-    if (!keyboard_check(vk_space))
+    if (
+        space_hold_timer >= fly_hold_delay &&
+        fly_cooldown <= 0 &&
+        stamina_current >= fly_min_stamina
+    )
     {
-        is_flying = false;
-        jump_z = 0;
+        is_jumping = false;
+        is_flying = true;
+        is_sprinting = false;
+
+        jump_z = fly_height;
+        fly_timer = fly_time_max;
+
+        var_main_speed = var_walk_speed;
     }
 }
 
 
+// =====================================
+// FLYING
+// =====================================
+
+if (is_flying)
+{
+    jump_z = fly_height;
+
+    stamina_current -= fly_stamina_drain;
+
+    if (keyboard_check(ord("W")))
+    {
+        y -= fly_speed;
+        facing_dir = "up";
+    }
+
+    if (keyboard_check(ord("S")))
+    {
+        y += fly_speed;
+        facing_dir = "down";
+    }
+
+    if (keyboard_check(ord("A")))
+    {
+        x -= fly_speed;
+        facing_dir = "left";
+    }
+
+    if (keyboard_check(ord("D")))
+    {
+        x += fly_speed;
+        facing_dir = "right";
+    }
+
+    if (!keyboard_check(vk_space) || fly_timer <= 0 || stamina_current <= 0)
+    {
+        is_flying = false;
+        is_jumping = false;
+
+        jump_z = 0;
+        fly_cooldown = fly_cooldown_time;
+
+        stamina_current = max(stamina_current, 0);
+    }
+}
+
+
+// =====================================
+// STAMINA RECOVERY
+// =====================================
+
+if (!is_sprinting && !is_flying)
+{
+    if (stamina_current < stamina_max)
+    {
+        stamina_current += stamina_recover_speed;
+    }
+}
+
+stamina_current = clamp(stamina_current, 0, stamina_max);
+
+
+// =====================================
 // SPRITES
+// =====================================
+
 if (is_jumping || is_flying)
 {
     if (facing_dir == "up") sprite_index = spr_main_character_up_fly;
@@ -79,7 +256,27 @@ if (is_jumping || is_flying)
     else if (facing_dir == "left") sprite_index = spr_main_character_left_fly;
     else if (facing_dir == "right") sprite_index = spr_main_character_right_fly;
 }
-// =====================================
+else if (is_sprinting && stamina_current > sprint_min_stamina && !sprint_locked)
+{
+    if (facing_dir == "up") sprite_index = spr_main_character_up_sprint;
+    else if (facing_dir == "down") sprite_index = spr_main_character_down_sprint;
+    else if (facing_dir == "left") sprite_index = spr_main_character_left_sprint;
+    else if (facing_dir == "right") sprite_index = spr_main_character_right_sprint;
+}
+else
+{
+    // Default back to normal walk/idle sprites
+    if (facing_dir == "up") sprite_index = spr_main_character_up_walk;
+    else if (facing_dir == "down") sprite_index = spr_main_character_down_walk;
+    else if (facing_dir == "left") sprite_index = spr_main_character_left_walk;
+    else if (facing_dir == "right") sprite_index = spr_main_character_right_walk;
+
+    // Freeze only if standing still
+    if (!moving)
+    {
+        image_index = 0;
+    }
+}
 // INVENTORY + WEAPON SYSTEM
 // =====================================
 

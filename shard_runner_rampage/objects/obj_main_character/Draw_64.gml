@@ -1,4 +1,167 @@
 // =====================================
+// STAMINA GUI
+// =====================================
+
+var gui_w = display_get_gui_width();
+var gui_h = display_get_gui_height();
+
+var box_w = 360;
+var box_h = 86;
+
+
+// =====================================
+// CENTER BOTTOM POSITION
+// =====================================
+
+var box_x = gui_w / 2 - box_w / 2;
+var box_y = gui_h - box_h - 10;
+
+var bar_x = box_x + 24;
+var bar_y = box_y + 46;
+
+var bar_w = 312;
+var bar_h = 18;
+
+
+// =====================================
+// BACKGROUND SHADOW
+// =====================================
+
+draw_set_alpha(0.35);
+draw_set_colour(c_black);
+
+draw_roundrect(box_x + 5, box_y + 5, box_x + box_w + 5, box_y + box_h + 5, false);
+
+
+// =====================================
+// BACKGROUND PANEL
+// =====================================
+
+draw_set_alpha(0.88);
+draw_set_colour(c_black);
+
+draw_roundrect(box_x, box_y, box_x + box_w, box_y + box_h, false);
+
+
+// =====================================
+// BORDER
+// =====================================
+
+draw_set_alpha(1);
+draw_set_colour(c_white);
+
+draw_roundrect(box_x, box_y, box_x + box_w, box_y + box_h, true);
+
+
+// =====================================
+// TITLE
+// =====================================
+
+draw_set_colour(c_white);
+draw_text(box_x + 24, box_y + 14, "STAMINA");
+
+
+// =====================================
+// STAMINA NUMBER
+// =====================================
+
+draw_text(
+    box_x + 250,
+    box_y + 14,
+    string(floor(stamina_current)) + " / " + string(stamina_max)
+);
+
+
+// =====================================
+// BAR BACKGROUND
+// =====================================
+
+draw_set_colour(c_dkgray);
+
+draw_roundrect(bar_x, bar_y, bar_x + bar_w, bar_y + bar_h, false);
+
+
+// =====================================
+// STAMINA BAR FILL
+// =====================================
+
+var stamina_percent = stamina_current / stamina_max;
+stamina_percent = clamp(stamina_percent, 0, 1);
+
+var fill_w = bar_w * stamina_percent;
+
+if (stamina_percent > 0.5)
+{
+    draw_set_colour(c_lime);
+}
+else if (stamina_percent > 0.25)
+{
+    draw_set_colour(c_yellow);
+}
+else
+{
+    draw_set_colour(c_red);
+}
+
+draw_roundrect(bar_x, bar_y, bar_x + fill_w, bar_y + bar_h, false);
+
+
+// =====================================
+// INNER BAR HIGHLIGHT
+// =====================================
+
+draw_set_alpha(0.35);
+draw_set_colour(c_white);
+
+draw_rectangle(bar_x + 3, bar_y + 3, bar_x + fill_w - 3, bar_y + 7, false);
+
+draw_set_alpha(1);
+
+
+// =====================================
+// BAR BORDER
+// =====================================
+
+draw_set_colour(c_white);
+draw_roundrect(bar_x, bar_y, bar_x + bar_w, bar_y + bar_h, true);
+
+
+// =====================================
+// STATUS TEXT
+// =====================================
+
+if (stamina_current <= sprint_min_stamina)
+{
+    draw_set_colour(c_red);
+    draw_text(box_x + 24, box_y + 66, "LOW STAMINA");
+}
+else if (sprint_locked)
+{
+    draw_set_colour(c_yellow);
+    draw_text(box_x + 24, box_y + 66, "RECOVERING");
+}
+else if (is_sprinting)
+{
+    draw_set_colour(c_lime);
+    draw_text(box_x + 24, box_y + 66, "SPRINTING");
+}
+else if (is_flying)
+{
+    draw_set_colour(c_aqua);
+    draw_text(box_x + 24, box_y + 66, "FLYING");
+}
+
+
+// =====================================
+// RESET DRAW SETTINGS
+// =====================================
+
+draw_set_alpha(1);
+draw_set_colour(c_white);
+
+draw_set_halign(fa_left);
+draw_set_valign(fa_top);
+// =====================================
 // AMMO GUI + COLLECT PROMPT + SUCCESS MESSAGE
 // =====================================
 
@@ -178,7 +341,7 @@ if (touching_weapon)
     var collect_box_h = 58;
 
     var collect_box_x = gui_w / 2 - collect_box_w / 2;
-    var collect_box_y = gui_h - 130;
+    var collect_box_y = gui_h - 170;
 
 
     // Background

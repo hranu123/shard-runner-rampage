@@ -94,9 +94,9 @@ is_jumping = false;
 jump_z = 0;
 jump_timer = 0;
 jump_duration = 24;
-jump_height = 50;
+jump_height = 75;
 
-jump_stamina_cost = 20;
+jump_stamina_cost = 25;
 jump_cooldown = 0;
 jump_cooldown_time = 45;
 

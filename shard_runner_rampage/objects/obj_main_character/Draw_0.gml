@@ -1,5 +1,5 @@
 // =====================================
-// WEAPON AND SWORD SYSTEM - DRAW EVENT
+// WEAPON AND SWORD SYSTEM 
 // =====================================
 
 

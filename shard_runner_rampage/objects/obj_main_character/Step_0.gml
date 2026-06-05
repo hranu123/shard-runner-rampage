@@ -1,5 +1,5 @@
 // =====================================
-// SAVE DIRECTION + MOVING CHECK
+// SAVE MOVEMENT DIRECTION
 // =====================================
 
 var moving = false;
@@ -9,25 +9,83 @@ if (keyboard_check(ord("W")))
     facing_dir = "up";
     moving = true;
 }
-
-if (keyboard_check(ord("S")))
+else if (keyboard_check(ord("S")))
 {
     facing_dir = "down";
     moving = true;
 }
-
-if (keyboard_check(ord("A")))
+else if (keyboard_check(ord("A")))
 {
     facing_dir = "left";
     moving = true;
 }
-
-if (keyboard_check(ord("D")))
+else if (keyboard_check(ord("D")))
 {
     facing_dir = "right";
     moving = true;
 }
 
+// =====================================
+// GUN + MOVEMENT FACING DIRECTION
+// Gun can control facing direction,
+// but movement keys can override it
+// =====================================
+
+var moving = false;
+
+var using_gun =
+    global.equipped_weapon == "pistol" ||
+    global.equipped_weapon == "rifle" ||
+    global.equipped_weapon == "shotgun" ||
+    global.equipped_weapon == "rpg";
+
+
+// Check movement first
+if (keyboard_check(ord("W")))
+{
+    facing_dir = "up";
+    moving = true;
+}
+else if (keyboard_check(ord("S")))
+{
+    facing_dir = "down";
+    moving = true;
+}
+else if (keyboard_check(ord("A")))
+{
+    facing_dir = "left";
+    moving = true;
+}
+else if (keyboard_check(ord("D")))
+{
+    facing_dir = "right";
+    moving = true;
+}
+
+
+// If holding a gun and NOT pressing movement keys,
+// character faces where gun/mouse is aiming
+if (using_gun && !moving)
+{
+    var aim_dir_step = point_direction(x, y - jump_z, mouse_x, mouse_y);
+
+    if (aim_dir_step >= 45 && aim_dir_step < 135)
+    {
+        facing_dir = "up";
+    }
+    else if (aim_dir_step >= 135 && aim_dir_step < 225)
+    {
+        facing_dir = "left";
+    }
+    else if (aim_dir_step >= 225 && aim_dir_step < 315)
+    {
+        facing_dir = "down";
+    }
+    else
+    {
+        facing_dir = "right";
+    }
+}
 
 // =====================================
 // COOLDOWNS
@@ -489,8 +547,55 @@ if (global.equipped_weapon != noone && !is_reloading)
 {
     var dir = point_direction(x, y, mouse_x, mouse_y);
 
-    var bullet_x = x + lengthdir_x(24, dir);
-    var bullet_y = y + lengthdir_y(24, dir);
+ // =====================================
+// BULLET SPAWN POSITION
+// Matches gun Draw Event position
+// =====================================
+
+var base_y = y - jump_z;
+
+// Direction toward mouse
+var dir = point_direction(x, base_y, mouse_x, mouse_y);
+
+
+// Match hand position from Draw Event
+var hand_x = x;
+var hand_y = base_y;
+
+if (facing_dir == "right")
+{
+    hand_x = x + 65;
+    hand_y = base_y + 30;
+}
+else if (facing_dir == "left")
+{
+    hand_x = x + 4;
+    hand_y = base_y + 45;
+}
+else if (facing_dir == "up")
+{
+    hand_x = x + 30;
+    hand_y = base_y + 45;
+}
+else if (facing_dir == "down")
+{
+    hand_x = x + 30;
+    hand_y = base_y + 60;
+}
+
+
+// Match gun Draw Event pull distance
+var gun_distance = 4;
+
+var gun_x = hand_x + lengthdir_x(gun_distance, dir);
+var gun_y = hand_y + lengthdir_y(gun_distance, dir);
+
+
+// Spawn bullet from end of weapon barrel
+var barrel_distance = 42;
+
+var bullet_x = gun_x + lengthdir_x(barrel_distance, dir);
+var bullet_y = gun_y + lengthdir_y(barrel_distance, dir);
 
 
     // PISTOL - one shot per click

@@ -10,7 +10,7 @@ var_walk_animation = 2.5;
 var_sprint_animation = 5;
 
 var_main_animation_speed = var_walk_animation;
-
+aim_facing_dir = "down";
 facing_dir = "down";
 // WEAPON MECHANICS
 // Rifle automatic fire cooldown

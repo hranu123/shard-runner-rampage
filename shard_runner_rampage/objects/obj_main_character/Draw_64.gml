@@ -132,22 +132,26 @@ draw_roundrect(bar_x, bar_y, bar_x + bar_w, bar_y + bar_h, true);
 
 if (stamina_current <= sprint_min_stamina)
 {
-    draw_set_colour(c_red);
+     draw_set_font(fnt_text);
+	draw_set_colour(c_red);
     draw_text(box_x + 24, box_y + 66, "LOW STAMINA");
 }
 else if (sprint_locked)
 {
-    draw_set_colour(c_yellow);
+     draw_set_font(fnt_text);
+	draw_set_colour(c_yellow);
     draw_text(box_x + 24, box_y + 66, "RECOVERING");
 }
 else if (is_sprinting)
 {
-    draw_set_colour(c_lime);
+     draw_set_font(fnt_text);
+	draw_set_colour(c_lime);
     draw_text(box_x + 24, box_y + 66, "SPRINTING");
 }
 else if (is_flying)
 {
-    draw_set_colour(c_aqua);
+     draw_set_font(fnt_text);
+	draw_set_colour(c_aqua);
     draw_text(box_x + 24, box_y + 66, "FLYING");
 }
 
@@ -158,7 +162,7 @@ else if (is_flying)
 
 draw_set_alpha(1);
 draw_set_colour(c_white);
-
+ draw_set_font(fnt_text);
 draw_set_halign(fa_left);
 draw_set_valign(fa_top);
 // =====================================
@@ -238,19 +242,20 @@ if (global.equipped_weapon != noone && global.equipped_weapon != "sword")
 
 
     // Weapon name
-    draw_set_font(fnt_gun_ammo);
+    draw_set_font(fnt_text);
     draw_set_colour(c_white);
 
     draw_text(
-        ammo_box_x + 16,
+        ammo_box_x + 12,
         ammo_box_y + 12,
         weapon_name
     );
 
 
     // Ammo number
-    draw_text(
-        ammo_box_x + 16,
+    draw_set_font(fnt_text);
+	draw_text(
+        ammo_box_x + 12,
         ammo_box_y + 36,
         "AMMO: " + string(ammo_current) + " / " + string(ammo_max)
     );
@@ -289,7 +294,7 @@ if (global.equipped_weapon != noone && global.equipped_weapon != "sword")
     if (ammo_current <= 0)
     {
         draw_set_colour(c_red);
-
+		 draw_set_font(fnt_text);
         draw_text(
             ammo_box_x + 110,
             ammo_box_y + 36,
@@ -383,7 +388,7 @@ if (touching_weapon)
 
 
     // V text
-    draw_set_font(fnt_gun_ammo);
+     draw_set_font(fnt_text);
     draw_set_colour(c_black);
 
     draw_text(
@@ -456,7 +461,7 @@ if (collect_message_timer > 0)
 
 
     // Message text
-    draw_set_font(fnt_gun_ammo);
+    draw_set_font(fnt_text);
     draw_set_colour(c_white);
     draw_set_halign(fa_center);
     draw_set_valign(fa_middle);

@@ -2,36 +2,32 @@
 // SAVE MOVEMENT DIRECTION
 // =====================================
 
-var moving = false;
+mask_index = spr_main_character_right_walk;;
 
-if (keyboard_check(ord("W")))
-{
-    facing_dir = "up";
-    moving = true;
-}
-else if (keyboard_check(ord("S")))
-{
-    facing_dir = "down";
-    moving = true;
-}
-else if (keyboard_check(ord("A")))
+var moving = false;
+var fly_moving = false;
+
+var move_left = keyboard_check(ord("A"));
+var move_right = keyboard_check(ord("D"));
+var move_up = keyboard_check(ord("W"));
+var move_down = keyboard_check(ord("S"));
+
+if (move_left)
 {
     facing_dir = "left";
     moving = true;
 }
-else if (keyboard_check(ord("D")))
+else if (move_right)
 {
     facing_dir = "right";
     moving = true;
 }
 
+
 // =====================================
 // GUN + MOVEMENT FACING DIRECTION
-// Gun can control facing direction,
-// but movement keys can override it
+// Gun controls facing only when not moving or flying
 // =====================================
-
-var moving = false;
 
 var using_gun =
     global.equipped_weapon == "pistol" ||
@@ -39,53 +35,18 @@ var using_gun =
     global.equipped_weapon == "shotgun" ||
     global.equipped_weapon == "rpg";
 
-
-// Check movement first
-if (keyboard_check(ord("W")))
+if (using_gun && !moving && !is_flying)
 {
-    facing_dir = "up";
-    moving = true;
-}
-else if (keyboard_check(ord("S")))
-{
-    facing_dir = "down";
-    moving = true;
-}
-else if (keyboard_check(ord("A")))
-{
-    facing_dir = "left";
-    moving = true;
-}
-else if (keyboard_check(ord("D")))
-{
-    facing_dir = "right";
-    moving = true;
-}
-
-
-// If holding a gun and NOT pressing movement keys,
-// character faces where gun/mouse is aiming
-if (using_gun && !moving)
-{
-    var aim_dir_step = point_direction(x, y - jump_z, mouse_x, mouse_y);
-
-    if (aim_dir_step >= 45 && aim_dir_step < 135)
-    {
-        facing_dir = "up";
-    }
-    else if (aim_dir_step >= 135 && aim_dir_step < 225)
+    if (mouse_x < x)
     {
         facing_dir = "left";
-    }
-    else if (aim_dir_step >= 225 && aim_dir_step < 315)
-    {
-        facing_dir = "down";
     }
     else
     {
         facing_dir = "right";
     }
 }
+
 
 // =====================================
 // COOLDOWNS
@@ -102,28 +63,81 @@ if (is_flying && fly_timer > 0)
 
 
 // =====================================
+// GRAVITY SYSTEM
+// =====================================
+
+is_grounded = place_meeting(x, y + 1, obj_ground);
+
+if (is_grounded)
+{
+    is_falling = false;
+
+    if (vsp > 0)
+    {
+        vsp = 0;
+    }
+}
+else
+{
+    is_grounded = false;
+}
+
+if (!is_grounded && !is_flying)
+{
+    vsp += gravity_force;
+
+    if (vsp > max_fall_speed)
+    {
+        vsp = max_fall_speed;
+    }
+
+    is_falling = true;
+}
+
+if (!is_flying)
+{
+    if (vsp != 0)
+    {
+        if (place_meeting(x, y + vsp, obj_ground))
+        {
+            while (!place_meeting(x, y + sign(vsp), obj_ground))
+            {
+                y += sign(vsp);
+            }
+
+            vsp = 0;
+            is_grounded = place_meeting(x, y + 1, obj_ground);
+            is_falling = false;
+            is_jumping = false;
+        }
+        else
+        {
+            y += vsp;
+        }
+    }
+}
+
+
+// =====================================
 // SPRINT SYSTEM
-// Hold Shift while moving
 // =====================================
 
 is_sprinting = false;
 
-// Lock sprint if stamina is too low
 if (stamina_current <= sprint_min_stamina)
 {
     sprint_locked = true;
 }
 
-// Unlock sprint only after stamina recovers enough
 if (stamina_current >= sprint_resume_stamina)
 {
     sprint_locked = false;
 }
 
-// Sprint only if not locked
 if (
     keyboard_check(vk_shift) &&
     moving &&
+    is_grounded &&
     !is_jumping &&
     !is_flying &&
     !sprint_locked &&
@@ -145,7 +159,6 @@ else
     var_main_animation_speed = var_walk_animation;
 }
 
-// If stamina hits 0 while sprinting, stop sprint and start cooldown
 if (stamina_current <= 0)
 {
     stamina_current = 0;
@@ -156,6 +169,43 @@ if (stamina_current <= 0)
     var_main_speed = var_walk_speed;
     var_main_animation_speed = var_walk_animation;
 }
+
+
+// =====================================
+// HORIZONTAL MOVEMENT
+// Disabled while flying
+// =====================================
+
+if (!is_flying)
+{
+    var hsp = 0;
+
+    if (move_left)
+    {
+        hsp = -var_main_speed;
+    }
+
+    if (move_right)
+    {
+        hsp = var_main_speed;
+    }
+
+    if (hsp != 0)
+    {
+        if (!place_meeting(x + hsp, y, obj_ground))
+        {
+            x += hsp;
+        }
+        else
+        {
+            while (!place_meeting(x + sign(hsp), y, obj_ground))
+            {
+                x += sign(hsp);
+            }
+        }
+    }
+}
+
 
 // =====================================
 // SPACE HOLD TIMER
@@ -173,23 +223,22 @@ else
 
 // =====================================
 // START JUMP
-// Tap Space = jump once
 // =====================================
 
 if (keyboard_check_pressed(vk_space))
 {
-    if (!is_jumping && !is_flying && jump_cooldown <= 0 && stamina_current >= jump_stamina_cost)
+    if (is_grounded && !is_flying && jump_cooldown <= 0 && stamina_current >= jump_stamina_cost)
     {
-        is_jumping = true;
-        is_flying = false;
+        vsp = jump_force;
 
-        jump_timer = 0;
-        jump_z = 0;
+        is_jumping = true;
+        is_falling = false;
+        is_flying = false;
+        is_grounded = false;
 
         stamina_current -= jump_stamina_cost;
         jump_cooldown = jump_cooldown_time;
 
-        // Stop sprinting when jump begins
         is_sprinting = false;
         var_main_speed = var_walk_speed;
     }
@@ -197,44 +246,48 @@ if (keyboard_check_pressed(vk_space))
 
 
 // =====================================
-// JUMP ARC
+// JUMP STATE
 // =====================================
 
-if (is_jumping && !is_flying)
+if (is_grounded)
 {
-    jump_timer++;
+    is_jumping = false;
+}
 
-    var progress = jump_timer / jump_duration;
-
-    jump_z = sin(progress * pi) * jump_height;
-
-    if (jump_timer >= jump_duration)
-    {
-        is_jumping = false;
-        jump_z = 0;
-    }
+if (!is_grounded && vsp > 0 && !is_flying)
+{
+    is_falling = true;
 }
 
 
 // =====================================
 // START FLYING
-// Hold Space after jump = fly
 // =====================================
 
-if (is_jumping && keyboard_check(vk_space))
+if (!is_grounded && keyboard_check(vk_space))
 {
     if (
         space_hold_timer >= fly_hold_delay &&
         fly_cooldown <= 0 &&
-        stamina_current >= fly_min_stamina
+        stamina_current >= fly_min_stamina &&
+        !is_flying
     )
     {
         is_jumping = false;
+        is_falling = false;
         is_flying = true;
         is_sprinting = false;
 
-        jump_z = fly_height;
+        is_fly_lifting = true;
+        fly_lift_timer = fly_lift_time;
+
+        vsp = 0;
         fly_timer = fly_time_max;
+
+        fly_anim_frame = 0;
+        last_fly_sprite = noone;
+
+        facing_dir = "up";
 
         var_main_speed = var_walk_speed;
     }
@@ -243,44 +296,98 @@ if (is_jumping && keyboard_check(vk_space))
 
 // =====================================
 // FLYING
+// Lift upward first, then allow control
 // =====================================
 
 if (is_flying)
 {
-    jump_z = fly_height;
+    vsp = 0;
 
     stamina_current -= fly_stamina_drain;
 
-    if (keyboard_check(ord("W")))
+    var fly_hsp = 0;
+    var fly_vsp = 0;
+
+    if (is_fly_lifting)
     {
-        y -= fly_speed;
+        fly_vsp = -fly_lift_speed;
         facing_dir = "up";
+
+        fly_lift_timer--;
+
+        if (fly_lift_timer <= 0)
+        {
+            is_fly_lifting = false;
+        }
+    }
+    else
+    {
+        if (move_left)
+        {
+            fly_hsp = -fly_speed;
+            facing_dir = "left";
+            fly_moving = true;
+        }
+
+        if (move_right)
+        {
+            fly_hsp = fly_speed;
+            facing_dir = "right";
+            fly_moving = true;
+        }
+
+        if (move_up)
+        {
+            fly_vsp = -fly_speed;
+            facing_dir = "up";
+            fly_moving = true;
+        }
+
+        if (move_down)
+        {
+            fly_vsp = fly_speed;
+            facing_dir = "down";
+            fly_moving = true;
+        }
     }
 
-    if (keyboard_check(ord("S")))
+    if (fly_hsp != 0)
     {
-        y += fly_speed;
-        facing_dir = "down";
+        if (!place_meeting(x + fly_hsp, y, obj_ground))
+        {
+            x += fly_hsp;
+        }
+        else
+        {
+            while (!place_meeting(x + sign(fly_hsp), y, obj_ground))
+            {
+                x += sign(fly_hsp);
+            }
+        }
     }
 
-    if (keyboard_check(ord("A")))
+    if (fly_vsp != 0)
     {
-        x -= fly_speed;
-        facing_dir = "left";
-    }
-
-    if (keyboard_check(ord("D")))
-    {
-        x += fly_speed;
-        facing_dir = "right";
+        if (!place_meeting(x, y + fly_vsp, obj_ground))
+        {
+            y += fly_vsp;
+        }
+        else
+        {
+            while (!place_meeting(x, y + sign(fly_vsp), obj_ground))
+            {
+                y += sign(fly_vsp);
+            }
+        }
     }
 
     if (!keyboard_check(vk_space) || fly_timer <= 0 || stamina_current <= 0)
     {
         is_flying = false;
         is_jumping = false;
+        is_falling = true;
+        is_fly_lifting = false;
 
-        jump_z = 0;
         fly_cooldown = fly_cooldown_time;
 
         stamina_current = max(stamina_current, 0);
@@ -305,41 +412,123 @@ stamina_current = clamp(stamina_current, 0, stamina_max);
 
 // =====================================
 // SPRITES
+// Smooth sprint animation fix
 // =====================================
 
-if (is_jumping || is_flying)
+var new_sprite = sprite_index;
+var new_speed = 0;
+var manual_animation = false;
+
+
+// FLYING
+if (is_flying)
 {
-    if (facing_dir == "up") sprite_index = spr_main_character_up_fly;
-    else if (facing_dir == "down") sprite_index = spr_main_character_down_fly;
-    else if (facing_dir == "left") sprite_index = spr_main_character_left_fly;
-    else if (facing_dir == "right") sprite_index = spr_main_character_right_fly;
+    if (facing_dir == "up") new_sprite = spr_main_character_up_fly;
+    else if (facing_dir == "down") new_sprite = spr_main_character_down_fly;
+    else if (facing_dir == "left") new_sprite = spr_main_character_left_fly;
+    else new_sprite = spr_main_character_right_fly;
+
+    new_speed = 0;
+    manual_animation = true;
 }
-else if (is_sprinting && stamina_current > sprint_min_stamina && !sprint_locked)
+
+// FALLING
+else if (is_falling)
 {
-    if (facing_dir == "up") sprite_index = spr_main_character_up_sprint;
-    else if (facing_dir == "down") sprite_index = spr_main_character_down_sprint;
-    else if (facing_dir == "left") sprite_index = spr_main_character_left_sprint;
-    else if (facing_dir == "right") sprite_index = spr_main_character_right_sprint;
+    new_sprite = spr_main_character_down_fly;
+    new_speed = 0;
+    manual_animation = true;
 }
+
+// JUMPING
+else if (is_jumping)
+{
+    if (facing_dir == "left") new_sprite = spr_main_character_left_fly;
+    else new_sprite = spr_main_character_right_fly;
+
+    new_speed = fly_animation_speed;
+}
+
+// SPRINTING
+else if (is_sprinting && moving && is_grounded)
+{
+    if (facing_dir == "left") new_sprite = spr_main_character_left_sprint;
+    else new_sprite = spr_main_character_right_sprint;
+
+    new_speed = var_sprint_animation;
+}
+
+// WALK / IDLE
 else
 {
-    // Default back to normal walk/idle sprites
-    if (facing_dir == "up") sprite_index = spr_main_character_up_walk;
-    else if (facing_dir == "down") sprite_index = spr_main_character_down_walk;
-    else if (facing_dir == "left") sprite_index = spr_main_character_left_walk;
-    else if (facing_dir == "right") sprite_index = spr_main_character_right_walk;
+    if (facing_dir == "left") new_sprite = spr_main_character_left_walk;
+    else new_sprite = spr_main_character_right_walk;
 
-    // Freeze only if standing still
-    if (!moving)
+    if (moving)
+    {
+        new_speed = var_walk_animation;
+    }
+    else
+    {
+        new_speed = 0;
+    }
+}
+
+
+// =====================================
+// APPLY SPRITE SMOOTHLY
+// =====================================
+
+if (sprite_index != new_sprite)
+{
+    sprite_index = new_sprite;
+
+    if (image_index >= sprite_get_number(sprite_index))
     {
         image_index = 0;
     }
+
+    if (manual_animation)
+    {
+        fly_anim_frame = image_index;
+        last_fly_sprite = sprite_index;
+    }
 }
+
+image_speed = new_speed;
+
+
+// =====================================
+// MANUAL FLY / FALL FRAME CONTROL ONLY
+// =====================================
+
+if (manual_animation)
+{
+    fly_anim_frame += fly_animation_speed;
+
+    if (fly_anim_frame >= sprite_get_number(sprite_index))
+    {
+        fly_anim_frame = 0;
+    }
+
+    image_index = fly_anim_frame;
+}
+
+
+// =====================================
+// IDLE FRAME RESET ONLY
+// =====================================
+
+if (!moving && !is_flying && !is_falling && !is_jumping && !is_sprinting)
+{
+    image_index = 0;
+}
+
+
+// =====================================
 // INVENTORY + WEAPON SYSTEM
 // =====================================
 
-
-// SAFETY CHECK
 if (!variable_global_exists("weapon_inventory"))
 {
     global.weapon_inventory = [noone, noone, noone, noone, noone];
@@ -348,7 +537,10 @@ if (!variable_global_exists("weapon_inventory"))
 }
 
 
+// =====================================
 // SAFETY CHECK FOR PLAYER VARIABLES
+// =====================================
+
 if (!variable_instance_exists(id, "rifle_fire_cooldown"))
 {
     rifle_fire_cooldown = 0;
@@ -360,74 +552,72 @@ if (!variable_instance_exists(id, "collect_message_timer"))
 }
 
 
-// COUNT DOWN RIFLE FIRE COOLDOWN
+// =====================================
+// COUNTDOWNS
+// =====================================
+
 if (rifle_fire_cooldown > 0)
 {
     rifle_fire_cooldown--;
 }
 
-
-// COUNT DOWN COLLECT MESSAGE
 if (collect_message_timer > 0)
 {
     collect_message_timer--;
 }
 
 
+// =====================================
 // RELOAD SYSTEM
+// =====================================
+
 if (keyboard_check_pressed(ord("R")) && !is_reloading)
 {
     if (global.equipped_weapon == "pistol" && pistol_current_ammo < pistol_max_ammo)
     {
         is_reloading = true;
         reload_timer = pistol_reload_time;
-}
+    }
 
     if (global.equipped_weapon == "rifle" && rifle_current_ammo < rifle_max_ammo)
     {
         is_reloading = true;
         reload_timer = rifle_reload_time;
     }
-	 if (global.equipped_weapon == "shotgun" && shotgun_current_ammo <shotgun_max_ammo)
+
+    if (global.equipped_weapon == "shotgun" && shotgun_current_ammo < shotgun_max_ammo)
     {
         is_reloading = true;
         reload_timer = shotgun_reload_time;
-} 
-if (global.equipped_weapon == "rpg" && rpg_current_ammo <rpg_max_ammo)
+    }
+
+    if (global.equipped_weapon == "rpg" && rpg_current_ammo < rpg_max_ammo)
     {
         is_reloading = true;
         reload_timer = rpg_reload_time;
+    }
 }
-}
+
 if (is_reloading)
 {
     reload_timer--;
 
     if (reload_timer <= 0)
     {
-if (global.equipped_weapon == "pistol")
-        {
-            pistol_current_ammo = pistol_max_ammo;
-        }
-if (global.equipped_weapon == "rifle")
-        {
-            rifle_current_ammo = rifle_max_ammo;
-        }
-if (global.equipped_weapon == "shotgun")
-        {
-            shotgun_current_ammo = shotgun_max_ammo;
-        }
-if (global.equipped_weapon == "rpg")
-        {
-            rpg_current_ammo = rpg_max_ammo;
-        }
+        if (global.equipped_weapon == "pistol") pistol_current_ammo = pistol_max_ammo;
+        if (global.equipped_weapon == "rifle") rifle_current_ammo = rifle_max_ammo;
+        if (global.equipped_weapon == "shotgun") shotgun_current_ammo = shotgun_max_ammo;
+        if (global.equipped_weapon == "rpg") rpg_current_ammo = rpg_max_ammo;
 
         is_reloading = false;
-}
+    }
 }
 
 
-// COLLECT PISTOL WITH V
+// =====================================
+// COLLECT WEAPONS WITH V
+// =====================================
+
 var pistol = instance_place(x, y, obj_pistol_item);
 
 if (pistol != noone && keyboard_check_pressed(ord("V")))
@@ -453,7 +643,6 @@ if (pistol != noone && keyboard_check_pressed(ord("V")))
 }
 
 
-// COLLECT RIFLE WITH V
 var rifle = instance_place(x, y, obj_rifle_item);
 
 if (rifle != noone && keyboard_check_pressed(ord("V")))
@@ -477,17 +666,18 @@ if (rifle != noone && keyboard_check_pressed(ord("V")))
         }
     }
 }
-// COLLECT SHOTGUN WITH V
+
+
 var shotgun = instance_place(x, y, obj_shotgun_item);
 
 if (shotgun != noone && keyboard_check_pressed(ord("V")))
 {
-    for (var j = 0; j < 5; j++)
+    for (var k = 0; k < 5; k++)
     {
-        if (global.weapon_inventory[j] == noone)
+        if (global.weapon_inventory[k] == noone)
         {
-            global.weapon_inventory[j] = "shotgun";
-            global.selected_weapon_slot = j;
+            global.weapon_inventory[k] = "shotgun";
+            global.selected_weapon_slot = k;
             global.equipped_weapon = "shotgun";
 
             collect_message_timer = 120;
@@ -501,17 +691,18 @@ if (shotgun != noone && keyboard_check_pressed(ord("V")))
         }
     }
 }
-// COLLECT RPG WITH V
+
+
 var rpg = instance_place(x, y, obj_rpg_item);
 
 if (rpg != noone && keyboard_check_pressed(ord("V")))
 {
-    for (var j = 0; j < 5; j++)
+    for (var r = 0; r < 5; r++)
     {
-        if (global.weapon_inventory[j] == noone)
+        if (global.weapon_inventory[r] == noone)
         {
-            global.weapon_inventory[j] = "rpg";
-            global.selected_weapon_slot = j;
+            global.weapon_inventory[r] = "rpg";
+            global.selected_weapon_slot = r;
             global.equipped_weapon = "rpg";
 
             collect_message_timer = 120;
@@ -527,7 +718,10 @@ if (rpg != noone && keyboard_check_pressed(ord("V")))
 }
 
 
+// =====================================
 // EQUIP WEAPON WITH NUMBER KEYS
+// =====================================
+
 if (keyboard_check_pressed(ord("1"))) global.selected_weapon_slot = 0;
 if (keyboard_check_pressed(ord("2"))) global.selected_weapon_slot = 1;
 if (keyboard_check_pressed(ord("3"))) global.selected_weapon_slot = 2;
@@ -535,70 +729,51 @@ if (keyboard_check_pressed(ord("4"))) global.selected_weapon_slot = 3;
 if (keyboard_check_pressed(ord("5"))) global.selected_weapon_slot = 4;
 
 
+// =====================================
 // UPDATE EQUIPPED WEAPON
+// =====================================
+
 if (global.selected_weapon_slot != -1)
 {
     global.equipped_weapon = global.weapon_inventory[global.selected_weapon_slot];
 }
 
 
+// =====================================
 // SHOOT WEAPON
-if (global.equipped_weapon != noone && !is_reloading)
-{
-    var dir = point_direction(x, y, mouse_x, mouse_y);
-
- // =====================================
-// BULLET SPAWN POSITION
-// Matches gun Draw Event position
 // =====================================
 
-var base_y = y - jump_z;
-
-// Direction toward mouse
-var dir = point_direction(x, base_y, mouse_x, mouse_y);
-
-
-// Match hand position from Draw Event
-var hand_x = x;
-var hand_y = base_y;
-
-if (facing_dir == "right")
+if (global.equipped_weapon != noone && !is_reloading)
 {
-    hand_x = x + 65;
-    hand_y = base_y + 30;
-}
-else if (facing_dir == "left")
-{
-    hand_x = x + 4;
-    hand_y = base_y + 45;
-}
-else if (facing_dir == "up")
-{
-    hand_x = x + 30;
-    hand_y = base_y + 45;
-}
-else if (facing_dir == "down")
-{
-    hand_x = x + 30;
-    hand_y = base_y + 60;
-}
+    var base_y = y - jump_z;
+
+    var dir = point_direction(x, base_y, mouse_x, mouse_y);
+
+    var hand_x = x;
+    var hand_y = base_y;
+
+    if (facing_dir == "right")
+    {
+        hand_x = x + 65;
+        hand_y = base_y + 30;
+    }
+    else
+    {
+        hand_x = x + 4;
+        hand_y = base_y + 45;
+    }
+
+    var gun_distance = 4;
+
+    var gun_x = hand_x + lengthdir_x(gun_distance, dir);
+    var gun_y = hand_y + lengthdir_y(gun_distance, dir);
+
+    var barrel_distance = 42;
+
+    var bullet_x = gun_x + lengthdir_x(barrel_distance, dir);
+    var bullet_y = gun_y + lengthdir_y(barrel_distance, dir);
 
 
-// Match gun Draw Event pull distance
-var gun_distance = 4;
-
-var gun_x = hand_x + lengthdir_x(gun_distance, dir);
-var gun_y = hand_y + lengthdir_y(gun_distance, dir);
-
-
-// Spawn bullet from end of weapon barrel
-var barrel_distance = 42;
-
-var bullet_x = gun_x + lengthdir_x(barrel_distance, dir);
-var bullet_y = gun_y + lengthdir_y(barrel_distance, dir);
-
-
-    // PISTOL - one shot per click
     if (global.equipped_weapon == "pistol")
     {
         if (mouse_check_button_pressed(mb_left) && pistol_current_ammo > 0)
@@ -612,8 +787,6 @@ var bullet_y = gun_y + lengthdir_y(barrel_distance, dir);
         }
     }
 
-
-    // RIFLE - hold mouse to shoot
     if (global.equipped_weapon == "rifle")
     {
         if (mouse_check_button(mb_left) && rifle_fire_cooldown <= 0 && rifle_current_ammo > 0)
@@ -627,7 +800,7 @@ var bullet_y = gun_y + lengthdir_y(barrel_distance, dir);
             rifle_fire_cooldown = 6;
         }
     }
-	// SHOTGUN - one shot per click
+
     if (global.equipped_weapon == "shotgun")
     {
         if (mouse_check_button_pressed(mb_left) && shotgun_current_ammo > 0)
@@ -637,10 +810,10 @@ var bullet_y = gun_y + lengthdir_y(barrel_distance, dir);
             bullet.direction = dir;
             bullet.speed = 12;
 
-           shotgun_current_ammo--;
+            shotgun_current_ammo--;
         }
     }
-	// RPG - one shot per click
+
     if (global.equipped_weapon == "rpg")
     {
         if (mouse_check_button_pressed(mb_left) && rpg_current_ammo > 0)
@@ -650,10 +823,12 @@ var bullet_y = gun_y + lengthdir_y(barrel_distance, dir);
             bullet.direction = dir;
             bullet.speed = 12;
 
-           rpg_current_ammo--;
+            rpg_current_ammo--;
         }
     }
 }
+
+
 // =====================================
 // SWORD ATTACK
 // =====================================
@@ -664,25 +839,16 @@ if (global.equipped_weapon == "sword")
     {
         is_sword_attacking = true;
         sword_attack_timer = sword_attack_duration;
-        // Reset sword animation frame only once when attack begins
         sword_attack_frame = 0;
 
         var hit_x = x;
         var hit_y = y;
 
-        if (facing_dir == "up")
-        {
-            hit_y = y - sword_range;
-        }
-        else if (facing_dir == "down")
-        {
-            hit_y = y + sword_range;
-        }
-        else if (facing_dir == "left")
+        if (facing_dir == "left")
         {
             hit_x = x - sword_range;
         }
-        else if (facing_dir == "right")
+        else
         {
             hit_x = x + sword_range;
         }
@@ -714,17 +880,13 @@ if (is_sword_attacking)
     sword_attack_timer--;
 
     var is_moving =
-        keyboard_check(ord("W")) ||
         keyboard_check(ord("A")) ||
-        keyboard_check(ord("S")) ||
         keyboard_check(ord("D"));
 
-    // Standing still = normal sword animation speed
     if (!is_moving)
     {
         sword_attack_frame += sword_attack_speed;
     }
-    // Moving = slower sword frame increase to prevent double-speed effect
     else
     {
         sword_attack_frame += sword_attack_speed * 0.5;

@@ -10,7 +10,6 @@ var_walk_animation = 2.5;
 var_sprint_animation = 5;
 
 var_main_animation_speed = var_walk_animation;
-aim_facing_dir = "down";
 facing_dir = "down";
 // WEAPON MECHANICS
 // Rifle automatic fire cooldown
@@ -92,9 +91,6 @@ sprint_resume_stamina = 25;
 is_jumping = false;
 
 jump_z = 0;
-jump_timer = 0;
-jump_duration = 24;
-jump_height = 75;
 
 jump_stamina_cost = 25;
 jump_cooldown = 0;
@@ -105,9 +101,12 @@ jump_cooldown_time = 45;
 is_flying = false;
 
 space_hold_timer = 0;
-fly_hold_delay = 8;
+fly_hold_delay = 30;
 
-fly_height = 34;
+fly_lift_speed = 30;
+fly_lift_time = 5;
+fly_lift_timer = 0;
+is_fly_lifting = false;
 fly_speed = 5;
 
 fly_time_max = 180;
@@ -118,3 +117,21 @@ fly_stamina_drain = 0.8;
 
 fly_cooldown = 0;
 fly_cooldown_time = 90;
+
+fly_animation_speed = 0.05;
+fly_anim_frame = 0;
+last_fly_sprite = noone;
+// =====================================
+// GRAVITY / PLATFORM SYSTEM
+// =====================================
+
+vsp = 0;
+
+gravity_force = 0.6;
+jump_force = -10;
+max_fall_speed = 14;
+
+is_grounded = false;
+is_falling = false;
+
+mask_index = spr_main_character_right_walk;

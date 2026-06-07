@@ -826,3 +826,74 @@ draw_set_alpha(1);
 draw_set_halign(fa_left);
 draw_set_valign(fa_top);
 draw_set_color(c_white);
+// =====================================
+// ENEMY ELIMINATED MESSAGE
+// =====================================
+
+if (global.enemy_eliminated_message_timer > 0)
+{
+    var gui_w = display_get_gui_width();
+
+    var msg_x = gui_w * 0.5;
+    var msg_y = 95;
+
+    var alpha =
+        global.enemy_eliminated_message_timer /
+        global.enemy_eliminated_message_duration;
+
+    var scale =
+        1.0 + (0.05 * abs(sin(current_time * 0.01)));
+
+    // Background strip
+    draw_set_alpha(alpha * 0.35);
+    draw_set_color(c_black);
+
+    draw_rectangle(
+        msg_x - 230,
+        msg_y - 24,
+        msg_x + 230,
+        msg_y + 24,
+        false
+    );
+
+    // Text
+    draw_set_alpha(alpha);
+    draw_set_halign(fa_center);
+    draw_set_valign(fa_middle);
+
+    // Shadow
+    draw_set_color(c_black);
+
+    draw_text_transformed(
+        msg_x + 2,
+        msg_y + 2,
+        global.enemy_eliminated_message_text,
+        scale,
+        scale,
+        0
+    );
+
+    // Main text
+    draw_set_color(make_color_rgb(255, 220, 60));
+
+    draw_text_transformed(
+        msg_x,
+        msg_y,
+        global.enemy_eliminated_message_text,
+        scale,
+        scale,
+        0
+    );
+}
+
+
+// =====================================
+// RESET DRAW SETTINGS
+// =====================================
+
+draw_set_alpha(1);
+draw_set_halign(fa_left);
+draw_set_valign(fa_top);
+draw_set_color(c_white);
+
+

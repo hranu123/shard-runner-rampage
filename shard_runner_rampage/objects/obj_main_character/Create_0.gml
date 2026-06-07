@@ -62,7 +62,7 @@ sword_attack_duration = 20;
 sword_attack_frame = 0;
 sword_attack_speed = 0.35;
 
-sword_damage = 1;
+sword_damage = 10;
 sword_range = 36;
 // =====================================
 // HEALTH SYSTEM
@@ -71,7 +71,6 @@ sword_range = 36;
 // Main health values
 health_max = 100;
 health_current = health_max;
-health_previous = health_current;
 
 
 // =====================================

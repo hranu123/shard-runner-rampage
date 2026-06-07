@@ -1,7 +1,6 @@
 // =====================================
 // ENEMY HEALTH SYSTEM
 // =====================================
-
 enemy_health_max = 100;
 enemy_health_current = enemy_health_max;
 
@@ -23,4 +22,7 @@ enemy_health_bar_y_offset = -45;
 
 // Death
 enemy_is_dead = false;
-
+// Elimination message
+global.enemy_eliminated_message_text = "";
+global.enemy_eliminated_message_timer = 0;
+global.enemy_eliminated_message_duration = 90;

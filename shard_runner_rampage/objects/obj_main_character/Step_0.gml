@@ -912,6 +912,7 @@ if (global.equipped_weapon != noone && global.equipped_weapon != "sword" && !is_
 
 // =====================================
 // SWORD ATTACK
+// Damages obj_enemy when enemy is within sword range
 // =====================================
 
 if (global.equipped_weapon == "sword")
@@ -929,9 +930,13 @@ if (global.equipped_weapon == "sword")
         {
             hit_x = x - sword_range;
         }
-        else
+        else if (facing_dir == "right")
         {
             hit_x = x + sword_range;
+        }
+        else
+        {
+            hit_x = x;
         }
 
         var enemy = instance_place(hit_x, hit_y, obj_enemy);
@@ -940,12 +945,8 @@ if (global.equipped_weapon == "sword")
         {
             with (enemy)
             {
-                hp -= other.sword_damage;
-
-                if (hp <= 0)
-                {
-                    instance_destroy();
-                }
+                enemy_health_current -= other.sword_damage;
+                enemy_damage_flash_timer = enemy_damage_flash_duration;
             }
         }
     }
@@ -1140,4 +1141,9 @@ if (is_dead)
         invincible = true;
         invincible_timer = invincible_duration;
     }
+}
+// ENEMY ELIMINATED TEXT TIMER
+if (global.enemy_eliminated_message_timer > 0)
+{
+    global.enemy_eliminated_message_timer--;
 }

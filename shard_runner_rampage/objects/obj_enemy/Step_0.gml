@@ -1,5 +1,5 @@
 // =====================================
-// ENEMY DAMAGE
+// ENEMY DAMAGE TO PLAYER
 // =====================================
 
 var player = instance_place(x, y, obj_main_character);
@@ -22,7 +22,7 @@ if (player != noone)
     }
 }
 // =====================================
-// ENEMY HEALTH UPDATE
+// ENEMY HEALTH 
 // =====================================
 
 enemy_health_current = clamp(enemy_health_current, 0, enemy_health_max);
@@ -87,8 +87,14 @@ if (hit_bullet != noone)
 // ENEMY DEATH
 // =====================================
 
-if (enemy_health_current <= 0)
+if (enemy_health_current <= 0 && !enemy_is_dead)
 {
     enemy_health_current = 0;
+    enemy_is_dead = true;
+
+    global.enemy_eliminated_message_text = "ENEMY ELIMINATED";
+    global.enemy_eliminated_message_timer = 90;
+    global.enemy_eliminated_message_duration = 90;
+
     instance_destroy();
 }

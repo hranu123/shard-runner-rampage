@@ -1,5 +1,5 @@
 // =====================================
-// WEAPON AND SWORD SYSTEM - DRAW EVENT
+// WEAPON AND SWORD SYSTEM 
 // =====================================
 
 
@@ -41,6 +41,7 @@ draw_sprite(
 
 // =====================================
 // DRAW GUNS ONLY WHEN EQUIPPED WEAPON IS NOT SWORD
+// Left / Right aiming only
 // =====================================
 
 if (global.equipped_weapon != noone && global.equipped_weapon != "sword")
@@ -56,7 +57,6 @@ if (global.equipped_weapon != noone && global.equipped_weapon != "sword")
     {
         var base_y = y - jump_z;
 
-        // Hand position values
         var right_hand_x = 65;
         var right_hand_y = 45;
 
@@ -65,13 +65,21 @@ if (global.equipped_weapon != noone && global.equipped_weapon != "sword")
 
         var gun_distance = 4;
 
-        // Aim toward mouse
-        var aim_dir = point_direction(x, base_y, mouse_x, mouse_y);
+        // Force aim direction left or right only
+        var aim_dir = 0;
+
+        if (facing_dir == "left")
+        {
+            aim_dir = 180;
+        }
+        else
+        {
+            aim_dir = 0;
+        }
 
         var hand_x = x;
         var hand_y = base_y;
 
-        // Choose hand anchor
         if (facing_dir == "left")
         {
             hand_x = x + left_hand_x;
@@ -83,19 +91,16 @@ if (global.equipped_weapon != noone && global.equipped_weapon != "sword")
             hand_y = base_y + right_hand_y;
         }
 
-        // Final gun position
         var gun_x = hand_x + lengthdir_x(gun_distance, aim_dir);
-        var gun_y = hand_y + lengthdir_y(gun_distance, aim_dir);
+        var gun_y = hand_y;
 
-        // Flip gun when aiming left
         var gun_yscale = 1;
 
-        if (aim_dir > 90 && aim_dir < 270)
+        if (facing_dir == "left")
         {
             gun_yscale = -1;
         }
 
-        // Draw weapon
         draw_sprite_ext(
             weapon_sprite,
             0,

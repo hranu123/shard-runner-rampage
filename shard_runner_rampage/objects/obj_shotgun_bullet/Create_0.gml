@@ -2,5 +2,5 @@
 damage = 1;
 
 // Bullet speed
-speed = 12;
+speed = 2;
 

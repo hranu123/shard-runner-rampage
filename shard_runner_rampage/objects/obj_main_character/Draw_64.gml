@@ -479,3 +479,350 @@ if (collect_message_timer > 0)
     draw_set_halign(fa_left);
     draw_set_valign(fa_top);
 }
+// =====================================
+// PROFESSIONAL HEALTH BAR 
+// =====================================
+
+
+// =====================================
+// GUI SIZE
+// =====================================
+
+var gui_w = display_get_gui_width();
+
+
+// =====================================
+// BAR SETTINGS
+// =====================================
+
+var bar_w = health_bar_width;
+var bar_h = health_bar_height;
+
+var bar_x = (gui_w * 0.5) - (bar_w * 0.5);
+var bar_y = 25;
+
+
+// =====================================
+// HEALTH RATIOS
+// =====================================
+
+var current_ratio = clamp(health_current / health_max, 0, 1);
+var display_ratio = clamp(health_display / health_max, 0, 1);
+
+
+// =====================================
+// DAMAGE FLASH EFFECT
+// =====================================
+
+var flash_alpha = 0;
+
+if (health_damage_flash_timer > 0)
+{
+    flash_alpha = 0.25;
+}
+
+
+// =====================================
+// SHADOW
+// =====================================
+
+draw_set_alpha(0.40);
+draw_set_color(c_black);
+
+draw_roundrect(
+    bar_x - 12,
+    bar_y - 12,
+    bar_x + bar_w + 12,
+    bar_y + bar_h + 12,
+    false
+);
+
+
+// =====================================
+// OUTER FRAME
+// =====================================
+
+draw_set_alpha(1);
+draw_set_color(make_color_rgb(30, 30, 30));
+
+draw_roundrect(
+    bar_x - 6,
+    bar_y - 6,
+    bar_x + bar_w + 6,
+    bar_y + bar_h + 6,
+    false
+);
+
+
+// =====================================
+// INNER FRAME
+// =====================================
+
+draw_set_color(make_color_rgb(70, 70, 70));
+
+draw_roundrect(
+    bar_x - 2,
+    bar_y - 2,
+    bar_x + bar_w + 2,
+    bar_y + bar_h + 2,
+    false
+);
+
+
+// =====================================
+// EMPTY BAR
+// =====================================
+
+draw_set_color(make_color_rgb(15, 15, 15));
+
+draw_roundrect(
+    bar_x,
+    bar_y,
+    bar_x + bar_w,
+    bar_y + bar_h,
+    false
+);
+
+
+// =====================================
+// DELAYED DAMAGE BAR
+// =====================================
+
+draw_set_color(make_color_rgb(125, 20, 20));
+
+draw_roundrect(
+    bar_x,
+    bar_y,
+    bar_x + (bar_w * display_ratio),
+    bar_y + bar_h,
+    false
+);
+
+
+// =====================================
+// HEALTH COLOR
+// =====================================
+
+if (current_ratio > 0.60)
+{
+    draw_set_color(make_color_rgb(0, 220, 80));
+}
+else if (current_ratio > health_critical_percent)
+{
+    draw_set_color(make_color_rgb(255, 190, 0));
+}
+else
+{
+    draw_set_color(make_color_rgb(220, 40, 40));
+}
+
+
+// =====================================
+// CURRENT HEALTH BAR
+// =====================================
+
+draw_roundrect(
+    bar_x,
+    bar_y,
+    bar_x + (bar_w * current_ratio),
+    bar_y + bar_h,
+    false
+);
+
+
+// =====================================
+// TOP HIGHLIGHT
+// =====================================
+
+if (current_ratio > 0)
+{
+    draw_set_alpha(0.22);
+    draw_set_color(c_white);
+
+    draw_roundrect(
+        bar_x + 4,
+        bar_y + 4,
+        bar_x + (bar_w * current_ratio) - 4,
+        bar_y + (bar_h * 0.45),
+        false
+    );
+}
+
+
+// =====================================
+// DAMAGE FLASH OVERLAY
+// =====================================
+
+if (flash_alpha > 0)
+{
+    draw_set_alpha(flash_alpha);
+    draw_set_color(c_white);
+
+    draw_roundrect(
+        bar_x,
+        bar_y,
+        bar_x + bar_w,
+        bar_y + bar_h,
+        false
+    );
+}
+
+
+// =====================================
+// CRITICAL HEALTH WARNING BORDER
+// =====================================
+
+draw_set_alpha(1);
+
+if (health_is_critical)
+{
+    draw_set_color(c_red);
+}
+else
+{
+    draw_set_color(c_white);
+}
+
+draw_roundrect(
+    bar_x,
+    bar_y,
+    bar_x + bar_w,
+    bar_y + bar_h,
+    true
+);
+
+
+// =====================================
+// TITLE
+// =====================================
+
+draw_set_halign(fa_center);
+draw_set_valign(fa_bottom);
+draw_set_color(c_white);
+
+draw_text(
+    bar_x + (bar_w * 0.5),
+    bar_y - 8,
+    "HEALTH"
+);
+
+
+// =====================================
+// HEALTH TEXT
+// =====================================
+
+draw_set_valign(fa_middle);
+
+draw_text(
+    bar_x + (bar_w * 0.5),
+    bar_y + (bar_h * 0.5),
+    string(floor(health_current)) + " / " + string(health_max)
+);
+// =====================================
+
+if (is_dead)
+{
+    var gui_w = display_get_gui_width();
+    var gui_h = display_get_gui_height();
+
+    var msg_x = gui_w * 0.5;
+    var msg_y = gui_h * 0.5;
+
+    // Blinking animation
+    var blink_alpha = 0.55 + (0.45 * abs(sin(current_time * 0.006)));
+
+    // Slight pulsing size
+    var text_scale = 1.0 + (0.08 * abs(sin(current_time * 0.004)));
+
+    // White transparent full-screen background
+    draw_set_alpha(0.35);
+    draw_set_color(c_white);
+
+    draw_rectangle(
+        0,
+        0,
+        gui_w,
+        gui_h,
+        false
+    );
+
+    // Dark transparent center strip across screen
+    draw_set_alpha(0.55);
+    draw_set_color(c_black);
+
+    draw_rectangle(
+        0,
+        msg_y - 80,
+        gui_w,
+        msg_y + 80,
+        false
+    );
+
+    // Red accent lines
+    draw_set_alpha(blink_alpha);
+    draw_set_color(make_color_rgb(180, 20, 20));
+
+    draw_rectangle(
+        0,
+        msg_y - 85,
+        gui_w,
+        msg_y - 78,
+        false
+    );
+
+    draw_rectangle(
+        0,
+        msg_y + 78,
+        gui_w,
+        msg_y + 85,
+        false
+    );
+
+    // Text
+    draw_set_halign(fa_center);
+    draw_set_valign(fa_middle);
+
+    // Text shadow
+    draw_set_alpha(blink_alpha);
+    draw_set_color(c_black);
+
+    draw_text_transformed(
+        msg_x + 4,
+        msg_y + 4,
+        "YOU HAVE DIED!",
+        text_scale,
+        text_scale,
+        0
+    );
+
+    // Main blinking text
+    draw_set_alpha(blink_alpha);
+    draw_set_color(make_color_rgb(230, 30, 30));
+
+    draw_text_transformed(
+        msg_x,
+        msg_y,
+        "YOU HAVE DIED!",
+        text_scale,
+        text_scale,
+        0
+    );
+
+    // Small subtitle
+    draw_set_alpha(0.85);
+    draw_set_color(c_white);
+
+    draw_text(
+        msg_x,
+        msg_y + 52,
+        "RESPAWNING..."
+    );
+}
+// =====================================
+// RESET DRAW SETTINGS
+// =====================================
+
+draw_set_alpha(1);
+draw_set_halign(fa_left);
+draw_set_valign(fa_top);
+draw_set_color(c_white);

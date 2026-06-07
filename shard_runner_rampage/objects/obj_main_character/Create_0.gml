@@ -7,7 +7,7 @@ var_main_speed = var_walk_speed;
 
 var_walk_animation = 2.5;
 
-var_sprint_animation = 5;
+var_sprint_animation = 2.5;
 
 var_main_animation_speed = var_walk_animation;
 facing_dir = "down";
@@ -64,10 +64,70 @@ sword_attack_speed = 0.35;
 
 sword_damage = 1;
 sword_range = 36;
-// HEALTH
+// =====================================
+// HEALTH SYSTEM
+// =====================================
+
+// Main health values
 health_max = 100;
 health_current = health_max;
+health_previous = health_current;
 
+
+// =====================================
+// DAMAGE / HIT FEEDBACK
+// =====================================
+
+health_damage_flash_timer = 0;
+health_damage_flash_duration = 15;
+
+
+// =====================================
+// INVINCIBILITY FRAMES
+// Prevents taking damage every single frame
+// =====================================
+
+invincible = false;
+invincible_timer = 0;
+invincible_duration = 30;
+
+
+// =====================================
+// HEALTH REGENERATION
+// =====================================
+
+health_regen_enabled = false;
+health_regen_delay = 180;
+health_regen_timer = 0;
+health_regen_amount = 0.25;
+
+
+// =====================================
+// HEALTH BAR SETTINGS
+// =====================================
+
+health_bar_width = 420;
+health_bar_height = 36;
+
+health_display = health_current;
+health_display_speed = 0.5;
+
+
+// =====================================
+// CRITICAL HEALTH WARNING
+// =====================================
+
+health_critical_percent = 0.25;
+health_is_critical = false;
+
+
+// =====================================
+// DEATH SYSTEM
+// =====================================
+
+is_dead = false;
+death_timer = 0;
+death_delay = 120;
 
 // STAMINA
 stamina_max = 200;
@@ -135,3 +195,40 @@ is_grounded = false;
 is_falling = false;
 
 mask_index = spr_main_character_right_walk;
+
+// =====================================
+// WEAPON HAND POSITION VARIABLES
+// Customize each weapon separately
+// =====================================
+
+// PISTOL
+pistol_right_hand_x = 65;
+pistol_right_hand_y = 40;
+pistol_left_hand_x = 4;
+pistol_left_hand_y = 60;
+pistol_barrel_distance = 12;
+pistol_bullet_y_offset = 0;
+
+// RIFLE
+rifle_right_hand_x = 65;
+rifle_right_hand_y = 25;
+rifle_left_hand_x = 4;
+rifle_left_hand_y = 45;
+rifle_barrel_distance = 48;
+rifle_bullet_y_offset = 0;
+
+// SHOTGUN
+shotgun_right_hand_x = 65;
+shotgun_right_hand_y = 30;
+shotgun_left_hand_x = 4;
+shotgun_left_hand_y = 50;
+shotgun_barrel_distance = 48;
+shotgun_bullet_y_offset = 0;
+
+// RPG
+rpg_right_hand_x = 70;
+rpg_right_hand_y = 28;
+rpg_left_hand_x = -8;
+rpg_left_hand_y = 70;
+rpg_barrel_distance = 50;
+rpg_bullet_y_offset = -6;

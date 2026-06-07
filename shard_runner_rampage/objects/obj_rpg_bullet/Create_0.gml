@@ -1,6 +1,8 @@
-// Bullet damage
-damage = 1;
+// =====================================
+// RPG BULLET 
+// =====================================
 
-// Bullet speed
 speed = 12;
+explosion_sprite = spr_explosion;
+explosion_target = obj_square;
 

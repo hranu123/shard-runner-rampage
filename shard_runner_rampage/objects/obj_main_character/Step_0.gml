@@ -743,37 +743,114 @@ if (global.selected_weapon_slot != -1)
 // SHOOT WEAPON
 // =====================================
 
-if (global.equipped_weapon != noone && !is_reloading)
+
+// =====================================
+// SHOOT WEAPON
+// Weapon-specific hand + bullet position
+// =====================================
+
+if (global.equipped_weapon != noone && global.equipped_weapon != "sword" && !is_reloading)
 {
     var base_y = y - jump_z;
 
-    var dir = point_direction(x, base_y, mouse_x, mouse_y);
+    // Force weapon direction to only left or right
+    var dir = 0;
 
+    if (facing_dir == "left")
+    {
+        dir = 180;
+    }
+    else
+    {
+        dir = 0;
+    }
+
+
+    // Default hand position values
+    var hand_right_x = 65;
+    var hand_right_y = 30;
+
+    var hand_left_x = 4;
+    var hand_left_y = 70;
+
+    var barrel_distance = 42;
+    var bullet_y_offset = 0;
+
+
+    // Weapon-specific hand position values
+    if (global.equipped_weapon == "pistol")
+    {
+        hand_right_x = pistol_right_hand_x;
+        hand_right_y = pistol_right_hand_y;
+
+        hand_left_x = pistol_left_hand_x;
+        hand_left_y = pistol_left_hand_y;
+
+        barrel_distance = pistol_barrel_distance;
+        bullet_y_offset = pistol_bullet_y_offset;
+    }
+    else if (global.equipped_weapon == "rifle")
+    {
+        hand_right_x = rifle_right_hand_x;
+        hand_right_y = rifle_right_hand_y;
+
+        hand_left_x = rifle_left_hand_x;
+        hand_left_y = rifle_left_hand_y;
+
+        barrel_distance = rifle_barrel_distance;
+        bullet_y_offset = rifle_bullet_y_offset;
+    }
+    else if (global.equipped_weapon == "shotgun")
+    {
+        hand_right_x = shotgun_right_hand_x;
+        hand_right_y = shotgun_right_hand_y;
+
+        hand_left_x = shotgun_left_hand_x;
+        hand_left_y = shotgun_left_hand_y;
+
+        barrel_distance = shotgun_barrel_distance;
+        bullet_y_offset = shotgun_bullet_y_offset;
+    }
+    else if (global.equipped_weapon == "rpg")
+    {
+        hand_right_x = rpg_right_hand_x;
+        hand_right_y = rpg_right_hand_y;
+
+        hand_left_x = rpg_left_hand_x;
+        hand_left_y = rpg_left_hand_y;
+
+        barrel_distance = rpg_barrel_distance;
+        bullet_y_offset = rpg_bullet_y_offset;
+    }
+
+
+    // Final hand position
     var hand_x = x;
     var hand_y = base_y;
 
     if (facing_dir == "right")
     {
-        hand_x = x + 65;
-        hand_y = base_y + 30;
+        hand_x = x + hand_right_x;
+        hand_y = base_y + hand_right_y;
     }
     else
     {
-        hand_x = x + 4;
-        hand_y = base_y + 45;
+        hand_x = x + hand_left_x;
+        hand_y = base_y + hand_left_y;
     }
 
+
+    // Final gun/bullet position
     var gun_distance = 4;
 
     var gun_x = hand_x + lengthdir_x(gun_distance, dir);
-    var gun_y = hand_y + lengthdir_y(gun_distance, dir);
-
-    var barrel_distance = 42;
+    var gun_y = hand_y;
 
     var bullet_x = gun_x + lengthdir_x(barrel_distance, dir);
-    var bullet_y = gun_y + lengthdir_y(barrel_distance, dir);
+    var bullet_y = gun_y + bullet_y_offset;
 
 
+    // PISTOL
     if (global.equipped_weapon == "pistol")
     {
         if (mouse_check_button_pressed(mb_left) && pistol_current_ammo > 0)
@@ -787,7 +864,8 @@ if (global.equipped_weapon != noone && !is_reloading)
         }
     }
 
-    if (global.equipped_weapon == "rifle")
+    // RIFLE
+    else if (global.equipped_weapon == "rifle")
     {
         if (mouse_check_button(mb_left) && rifle_fire_cooldown <= 0 && rifle_current_ammo > 0)
         {
@@ -801,7 +879,8 @@ if (global.equipped_weapon != noone && !is_reloading)
         }
     }
 
-    if (global.equipped_weapon == "shotgun")
+    // SHOTGUN
+    else if (global.equipped_weapon == "shotgun")
     {
         if (mouse_check_button_pressed(mb_left) && shotgun_current_ammo > 0)
         {
@@ -814,20 +893,22 @@ if (global.equipped_weapon != noone && !is_reloading)
         }
     }
 
-    if (global.equipped_weapon == "rpg")
+    // RPG
+    else if (global.equipped_weapon == "rpg")
     {
         if (mouse_check_button_pressed(mb_left) && rpg_current_ammo > 0)
         {
             var bullet = instance_create_layer(bullet_x, bullet_y, layer, obj_rpg_bullet);
 
             bullet.direction = dir;
-            bullet.speed = 12;
+            bullet.rpg_speed = 12;
+            bullet.explosion_sprite = spr_explosion;
+            bullet.explosion_target = obj_square;
 
             rpg_current_ammo--;
         }
     }
 }
-
 
 // =====================================
 // SWORD ATTACK
@@ -883,18 +964,180 @@ if (is_sword_attacking)
         keyboard_check(ord("A")) ||
         keyboard_check(ord("D"));
 
-    if (!is_moving)
+    var attack_speed = sword_attack_speed;
+
+    if (is_moving)
     {
-        sword_attack_frame += sword_attack_speed;
+        attack_speed *= 0.5;
     }
-    else
-    {
-        sword_attack_frame += sword_attack_speed * 0.5;
-    }
+
+    sword_attack_frame += attack_speed;
 
     if (sword_attack_timer <= 0)
     {
         is_sword_attacking = false;
         sword_attack_frame = 0;
+    }
+}
+// =====================================
+// HEALTH SYSTEM
+// =====================================
+
+
+// Clamp health
+health_current = clamp(
+    health_current,
+    0,
+    health_max
+);
+
+
+// =====================================
+// SMOOTH HEALTH BAR
+// =====================================
+
+// Health decreases smoothly
+if (health_display > health_current)
+{
+    health_display -= health_display_speed;
+
+    if (health_display < health_current)
+    {
+        health_display = health_current;
+    }
+}
+
+// Health increases smoothly
+else if (health_display < health_current)
+{
+    health_display += health_display_speed;
+
+    if (health_display > health_current)
+    {
+        health_display = health_current;
+    }
+}
+
+
+// =====================================
+// DAMAGE FLASH TIMER
+// =====================================
+
+if (health_damage_flash_timer > 0)
+{
+    health_damage_flash_timer--;
+}
+
+
+// =====================================
+// INVINCIBILITY TIMER
+// =====================================
+
+if (invincible)
+{
+    invincible_timer--;
+
+    if (invincible_timer <= 0)
+    {
+        invincible = false;
+        invincible_timer = 0;
+    }
+}
+
+
+// =====================================
+// HEALTH REGENERATION
+// =====================================
+
+if (health_regen_enabled)
+{
+    if (health_current < health_max)
+    {
+        health_regen_timer++;
+
+        if (health_regen_timer >= health_regen_delay)
+        {
+            health_current += health_regen_amount;
+
+            if (health_current > health_max)
+            {
+                health_current = health_max;
+            }
+        }
+    }
+    else
+    {
+        health_regen_timer = 0;
+    }
+}
+
+
+// =====================================
+// CRITICAL HEALTH WARNING
+// =====================================
+
+var critical_health =
+    health_max * health_critical_percent;
+
+if (health_current <= critical_health)
+{
+    health_is_critical = true;
+}
+else
+{
+    health_is_critical = false;
+}
+
+
+// =====================================
+// DEATH CHECK
+// =====================================
+
+if (health_current <= 0)
+{
+    health_current = 0;
+
+    if (!is_dead)
+    {
+        is_dead = true;
+        death_timer = death_delay;
+    }
+}
+
+
+// =====================================
+// DEATH TIMER / RESPAWN AT LEVEL START
+// =====================================
+
+if (is_dead)
+{
+    if (death_timer > 0)
+    {
+        death_timer--;
+    }
+    else
+    {
+        // Return player to the start of the level
+        x = xstart;
+        y = ystart;
+
+        // Reset movement
+        vsp = 0;
+        is_jumping = false;
+        is_falling = false;
+        is_flying = false;
+        is_sprinting = false;
+
+        // Reset health
+        health_current = health_max;
+        health_display = health_current;
+
+        // Reset death state
+        is_dead = false;
+        death_timer = 0;
+
+        // Give short invincibility after respawn
+        invincible = true;
+        invincible_timer = invincible_duration;
     }
 }

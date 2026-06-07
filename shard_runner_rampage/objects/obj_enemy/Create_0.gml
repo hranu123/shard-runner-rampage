@@ -15,7 +15,7 @@ enemy_damage_flash_duration = 10;
 
 // Bullet damage
 enemy_rifle_damage = 20;
-
+enemy_pistol_damage = 10;
 // Health bar settings
 enemy_health_bar_width = 70;
 enemy_health_bar_height = 8;

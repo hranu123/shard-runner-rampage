@@ -480,7 +480,7 @@ if (collect_message_timer > 0)
     draw_set_valign(fa_top);
 }
 // =====================================
-// PROFESSIONAL HEALTH BAR 
+// HEALTH BAR 
 // =====================================
 
 
@@ -506,8 +506,8 @@ var bar_y = 25;
 // HEALTH RATIOS
 // =====================================
 
-var current_ratio = clamp(health_current / health_max, 0, 1);
-var display_ratio = clamp(health_display / health_max, 0, 1);
+var current_ratio = clamp(global.health_current / global.health_max, 0, 1);
+var display_ratio = clamp(health_display / global.health_max, 0, 1);
 
 
 // =====================================
@@ -716,7 +716,7 @@ draw_set_valign(fa_middle);
 draw_text(
     bar_x + (bar_w * 0.5),
     bar_y + (bar_h * 0.5),
-    string(floor(health_current)) + " / " + string(health_max)
+    string(floor(global.health_current)) + " / " + string(global.health_max)
 );
 // =====================================
 

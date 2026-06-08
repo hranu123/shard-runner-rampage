@@ -10,7 +10,7 @@ if (player != noone)
     {
         if (!invincible && !is_dead)
         {
-            health_current -= 10;
+            global.health_current -= 10;
 
             health_damage_flash_timer = health_damage_flash_duration;
 

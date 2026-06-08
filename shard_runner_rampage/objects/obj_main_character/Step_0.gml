@@ -739,14 +739,11 @@ if (global.selected_weapon_slot != -1)
 }
 
 
-// =====================================
-// SHOOT WEAPON
-// =====================================
+
 
 
 // =====================================
 // SHOOT WEAPON
-// Weapon-specific hand + bullet position
 // =====================================
 
 if (global.equipped_weapon != noone && global.equipped_weapon != "sword" && !is_reloading)
@@ -986,10 +983,10 @@ if (is_sword_attacking)
 
 
 // Clamp health
-health_current = clamp(
-    health_current,
+global.health_current = clamp(
+    global.health_current,
     0,
-    health_max
+    global.health_max
 );
 
 
@@ -998,24 +995,24 @@ health_current = clamp(
 // =====================================
 
 // Health decreases smoothly
-if (health_display > health_current)
+if (health_display > global.health_current)
 {
     health_display -= health_display_speed;
 
-    if (health_display < health_current)
+    if (health_display < global.health_current)
     {
-        health_display = health_current;
+        health_display = global.health_current;
     }
 }
 
 // Health increases smoothly
-else if (health_display < health_current)
+else if (health_display < global.health_current)
 {
     health_display += health_display_speed;
 
-    if (health_display > health_current)
+    if (health_display > global.health_current)
     {
-        health_display = health_current;
+        health_display = global.health_current;
     }
 }
 
@@ -1052,17 +1049,17 @@ if (invincible)
 
 if (health_regen_enabled)
 {
-    if (health_current < health_max)
+    if (global.health_current < health_max)
     {
         health_regen_timer++;
 
         if (health_regen_timer >= health_regen_delay)
         {
-            health_current += health_regen_amount;
+            global.health_current += health_regen_amount;
 
-            if (health_current > health_max)
+            if (global.health_current > health_max)
             {
-                health_current = health_max;
+                global.health_current = global.health_max;
             }
         }
     }
@@ -1078,9 +1075,9 @@ if (health_regen_enabled)
 // =====================================
 
 var critical_health =
-    health_max * health_critical_percent;
+    global.health_max * health_critical_percent;
 
-if (health_current <= critical_health)
+if (global.health_current <= critical_health)
 {
     health_is_critical = true;
 }
@@ -1094,9 +1091,9 @@ else
 // DEATH CHECK
 // =====================================
 
-if (health_current <= 0)
+if (global.health_current <= 0)
 {
-    health_current = 0;
+    global.health_current = 0;
 
     if (!is_dead)
     {
@@ -1130,8 +1127,8 @@ if (is_dead)
         is_sprinting = false;
 
         // Reset health
-        health_current = health_max;
-        health_display = health_current;
+        global.health_current = global.health_max;
+        health_display = global.health_current;
 
         // Reset death state
         is_dead = false;

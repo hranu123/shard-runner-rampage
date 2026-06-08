@@ -69,8 +69,8 @@ sword_range = 36;
 // =====================================
 
 // Main health values
-health_max = 100;
-health_current = health_max;
+global.health_max = 100;
+global.health_current = global.health_max;
 
 
 // =====================================
@@ -108,7 +108,7 @@ health_regen_amount = 0.25;
 health_bar_width = 420;
 health_bar_height = 36;
 
-health_display = health_current;
+health_display = global.health_current;
 health_display_speed = 0.5;
 
 

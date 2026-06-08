@@ -84,21 +84,6 @@ if (hit_bullet != noone)
     }
 }
 // =====================================
-// SHOTGUN BULLET DAMAGE
-// =====================================
-var hit_bullet = instance_place(x, y, obj_shotgun_bullet);
-
-if (hit_bullet != noone)
-{
-    enemy_health_current -= enemy_shotgun_damage;
-    enemy_damage_flash_timer = enemy_damage_flash_duration;
-
-    with (hit_bullet)
-    {
-        instance_destroy();
-    }
-}
-// =====================================
 // ENEMY DEATH
 // =====================================
 

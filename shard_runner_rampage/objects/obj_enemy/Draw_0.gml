@@ -6,13 +6,14 @@ draw_self();
 
 
 // =====================================
-// ENEMY HEALTH BAR
+// PROFESSIONAL ENEMY HEALTH BAR
+// Always visible above enemy
 // =====================================
 
 var bar_w = enemy_health_bar_width;
 var bar_h = enemy_health_bar_height;
 
-var bar_x = x - (bar_w * 0.1);
+var bar_x = x - (bar_w * 0.5);
 var bar_y = y + enemy_health_bar_y_offset;
 
 var current_ratio = clamp(enemy_health_current / enemy_health_max, 0, 1);
@@ -69,7 +70,7 @@ draw_roundrect(
 );
 
 
-// Current health
+// Current health - red
 draw_set_color(make_color_rgb(230, 40, 40));
 
 draw_roundrect(

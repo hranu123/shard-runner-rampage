@@ -18,9 +18,9 @@ y += lengthdir_y(rpg_speed, direction);
 
 
 // Check collision with obj_square
-var hit_square = instance_place(x, y, explosion_target);
+var hit_enemy = instance_place(x, y, explosion_target);
 
-if (hit_square != noone)
+if (hit_enemy != noone)
 {
     // Create explosion effect at collision position
     var explosion = instance_create_layer(x, y, layer, obj_explosion);
@@ -29,7 +29,7 @@ if (hit_square != noone)
     explosion.image_speed = 0.4;
 
     // Destroy the square
-    with (hit_square)
+    with (hit_enemy)
     {
         instance_destroy();
     }

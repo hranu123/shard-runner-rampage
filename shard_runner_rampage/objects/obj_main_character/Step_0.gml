@@ -900,7 +900,7 @@ if (global.equipped_weapon != noone && global.equipped_weapon != "sword" && !is_
             bullet.direction = dir;
             bullet.rpg_speed = 12;
             bullet.explosion_sprite = spr_explosion;
-            bullet.explosion_target = obj_square;
+            bullet.explosion_target = obj_enemy;
 
             rpg_current_ammo--;
         }

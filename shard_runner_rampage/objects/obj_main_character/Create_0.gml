@@ -63,7 +63,7 @@ sword_attack_frame = 0;
 sword_attack_speed = 0.35;
 
 sword_damage = 10;
-sword_range = 36;
+sword_range = 45;
 // =====================================
 // HEALTH SYSTEM
 // =====================================
@@ -162,7 +162,7 @@ is_flying = false;
 space_hold_timer = 0;
 fly_hold_delay = 30;
 
-fly_lift_speed = 30;
+fly_lift_speed = 20;
 fly_lift_time = 5;
 fly_lift_timer = 0;
 is_fly_lifting = false;
@@ -187,8 +187,8 @@ last_fly_sprite = noone;
 vsp = 0;
 
 gravity_force = 0.6;
-jump_force = -10;
-max_fall_speed = 14;
+jump_force = -15;
+max_fall_speed = 15;
 
 is_grounded = false;
 is_falling = false;

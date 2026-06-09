@@ -2,10 +2,7 @@
   "resourceType": "GMObject",
   "resourceVersion": "1.0",
   "name": "obj_knight_blocker",
-  "spriteId": {
-    "name": "spr_knight_blocker",
-    "path": "sprites/spr_knight_blocker/spr_knight_blocker.yy",
-  },
+  "spriteId": null,
   "solid": false,
   "visible": false,
   "managed": true,

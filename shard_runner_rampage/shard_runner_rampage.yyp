@@ -14,7 +14,6 @@
     {"id":{"name":"spr_main_character_right_walk","path":"sprites/spr_main_character_right_walk/spr_main_character_right_walk.yy",},"order":16,},
     {"id":{"name":"spr_main_character_left_sprint","path":"sprites/spr_main_character_left_sprint/spr_main_character_left_sprint.yy",},"order":31,},
     {"id":{"name":"spr_rifle","path":"sprites/spr_rifle/spr_rifle.yy",},"order":8,},
-    {"id":{"name":"obj_square","path":"objects/obj_square/obj_square.yy",},"order":19,},
     {"id":{"name":"spr_pistol_bullet","path":"sprites/spr_pistol_bullet/spr_pistol_bullet.yy",},"order":12,},
     {"id":{"name":"obj_main_character","path":"objects/obj_main_character/obj_main_character.yy",},"order":0,},
     {"id":{"name":"spr_mom_right","path":"sprites/spr_mom_right/spr_mom_right.yy",},"order":35,},
@@ -76,12 +75,10 @@
     {"id":{"name":"obj_intro","path":"objects/obj_intro/obj_intro.yy",},"order":53,},
     {"id":{"name":"obj_rpg","path":"objects/obj_rpg/obj_rpg.yy",},"order":14,},
     {"id":{"name":"obj_rpg_item","path":"objects/obj_rpg_item/obj_rpg_item.yy",},"order":15,},
-    {"id":{"name":"spr_square","path":"sprites/spr_square/spr_square.yy",},"order":43,},
     {"id":{"name":"obj_rpg_bullet","path":"objects/obj_rpg_bullet/obj_rpg_bullet.yy",},"order":16,},
     {"id":{"name":"spr_pistol_inventory","path":"sprites/spr_pistol_inventory/spr_pistol_inventory.yy",},"order":37,},
     {"id":{"name":"spr_main_character_right_sprint","path":"sprites/spr_main_character_right_sprint/spr_main_character_right_sprint.yy",},"order":32,},
     {"id":{"name":"spr_keycard_collection_zone_from_guard","path":"sprites/spr_keycard_collection_zone_from_guard/spr_keycard_collection_zone_from_guard.yy",},"order":48,},
-    {"id":{"name":"Room1","path":"rooms/Room1/Room1.yy",},"order":0,},
   ],
   "Options": [
     {"name":"Android","path":"options/android/options_android.yy",},
@@ -101,7 +98,6 @@
     "children": [],
   },
   "RoomOrderNodes": [
-    {"roomId":{"name":"Room1","path":"rooms/Room1/Room1.yy",},},
     {"roomId":{"name":"Lobby","path":"rooms/Lobby/Lobby.yy",},},
   ],
   "Folders": [

@@ -122,7 +122,7 @@ if (!is_flying)
 // SPRINT SYSTEM
 // =====================================
 
-is_sprinting = false;
+   global.player_is_sprinting = false;
 
 if (stamina_current <= sprint_min_stamina)
 {
@@ -144,7 +144,7 @@ if (
     sprint_cooldown <= 0
 )
 {
-    is_sprinting = true;
+    global.player_is_sprinting = true;
 
     var_main_speed = var_main_sprint;
     var_main_animation_speed = var_sprint_animation;
@@ -153,7 +153,7 @@ if (
 }
 else
 {
-    is_sprinting = false;
+       global.player_is_sprinting = false;
 
     var_main_speed = var_walk_speed;
     var_main_animation_speed = var_walk_animation;
@@ -276,7 +276,7 @@ if (!is_grounded && keyboard_check(vk_space))
         is_jumping = false;
         is_falling = false;
         is_flying = true;
-        is_sprinting = false;
+        global.player_is_sprinting = false;
 
         is_fly_lifting = true;
         fly_lift_timer = fly_lift_time;
@@ -399,7 +399,7 @@ if (is_flying)
 // STAMINA RECOVERY
 // =====================================
 
-if (!is_sprinting && !is_flying)
+if (!global.player_is_sprinting && !is_flying)
 {
     if (stamina_current < stamina_max)
     {
@@ -450,7 +450,7 @@ else if (is_jumping)
 }
 
 // SPRINTING
-else if (is_sprinting && moving && is_grounded)
+else if (global.player_is_sprinting && moving && is_grounded)
 {
     if (facing_dir == "left") new_sprite = spr_main_character_left_sprint;
     else new_sprite = spr_main_character_right_sprint;
@@ -519,7 +519,7 @@ if (manual_animation)
 // IDLE FRAME RESET ONLY
 // =====================================
 
-if (!moving && !is_flying && !is_falling && !is_jumping && !is_sprinting)
+if (!moving && !is_flying && !is_falling && !is_jumping && !global.player_is_sprinting)
 {
     image_index = 0;
 }
@@ -1124,7 +1124,7 @@ if (is_dead)
         is_jumping = false;
         is_falling = false;
         is_flying = false;
-        is_sprinting = false;
+        global.player_is_sprinting = false;
 
         // Reset health
         global.health_current = global.health_max;

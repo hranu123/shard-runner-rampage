@@ -135,7 +135,7 @@ stamina_recover_speed = 0.5;
 
 
 // SPRINT
-is_sprinting = false;
+global.player_is_sprinting = false;
 
 sprint_stamina_drain = 1;
 sprint_min_stamina = 5;

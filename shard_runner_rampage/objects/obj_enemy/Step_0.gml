@@ -1,25 +1,14 @@
 // =====================================
-// ENEMY DAMAGE TO PLAYER
+// ATTACK TIMER
 // =====================================
 
-var player = instance_place(x, y, obj_main_character);
-
-if (player != noone)
+if (attack_sprite_timer > 0)
 {
-    with (player)
-    {
-        if (!invincible && !is_dead)
-        {
-            global.health_current -= 10;
-
-            health_damage_flash_timer = health_damage_flash_duration;
-
-            invincible = true;
-            invincible_timer = invincible_duration;
-
-            health_regen_timer = 0;
-        }
-    }
+    attack_sprite_timer--;
+}
+else
+{
+    is_attacking_player = false;
 }
 // =====================================
 // ENEMY HEALTH 
@@ -112,4 +101,177 @@ if (enemy_health_current <= 0 && !enemy_is_dead)
     global.enemy_eliminated_message_duration = 90;
 
     instance_destroy();
+}
+// =====================================
+// FIND PLAYER
+// =====================================
+
+var player = instance_nearest(x, y, obj_main_character);
+
+
+// =====================================
+// DETECTION
+// =====================================
+
+if (player != noone)
+{
+    var dist_to_player = point_distance(x, y, player.x, player.y);
+
+    if (
+        dist_to_player <= guard_walk_detect_range ||
+        (global.player_is_sprinting == true && dist_to_player <= guard_sprint_detect_range)
+    )
+    {
+        global.has_discovered_player1 = true;
+    }
+}
+
+is_chasing = global.has_discovered_player1;
+
+
+// =====================================
+// RESET MOVEMENT
+// =====================================
+
+hsp = 0;
+vsp = 0;
+
+
+// =====================================
+// CHASE PLAYER
+// =====================================
+
+if (is_chasing && player != noone)
+{
+    var move_dir = point_direction(x, y, player.x, player.y);
+
+    hsp = lengthdir_x(guard_fly_speed, move_dir);
+    vsp = lengthdir_y(guard_fly_speed, move_dir);
+
+    var dx = player.x - x;
+    var dy = player.y - y;
+
+    if (abs(dx) > abs(dy))
+    {
+        if (dx < 0)
+        {
+            facing_dir = "left";
+        }
+        else
+        {
+            facing_dir = "right";
+        }
+    }
+    else
+    {
+        if (dy < 0)
+        {
+            facing_dir = "up";
+        }
+        else
+        {
+            facing_dir = "down";
+        }
+    }
+}
+
+
+// =====================================
+// PATROL RANDOMLY UNTIL DETECTION
+// =====================================
+
+else
+{
+    hsp = lengthdir_x(guard_patrol_speed, guard_patrol_direction);
+    vsp = lengthdir_y(guard_patrol_speed, guard_patrol_direction);
+
+    if (guard_turn_cooldown > 0)
+    {
+        guard_turn_cooldown--;
+    }
+
+    if (place_meeting(x, y, obj_knight_blocker) && guard_turn_cooldown <= 0)
+    {
+        x -= lengthdir_x(8, guard_patrol_direction);
+        y -= lengthdir_y(8, guard_patrol_direction);
+
+        guard_patrol_direction = choose(0, 90, 180, 270);
+        guard_turn_cooldown = 30;
+    }
+
+    if (guard_patrol_direction == 0)
+    {
+        facing_dir = "right";
+    }
+    else if (guard_patrol_direction == 180)
+    {
+        facing_dir = "left";
+    }
+    else if (guard_patrol_direction == 90)
+    {
+        facing_dir = "up";
+    }
+    else if (guard_patrol_direction == 270)
+    {
+        facing_dir = "down";
+    }
+}
+
+
+// =====================================
+// APPLY MOVEMENT
+// =====================================
+
+x += hsp;
+y += vsp;
+
+
+// =====================================
+// SPRITE SYSTEM - FLY SPRITES ONLY
+// =====================================
+// =====================================
+// SPRITE SYSTEM
+// =====================================
+
+if (is_attacking_player)
+{
+    if (facing_dir == "up")
+    {
+        sprite_index = spr_mom_attack_up;
+    }
+    else if (facing_dir == "down")
+    {
+        sprite_index = spr_mom_attack_down;
+    }
+    else if (facing_dir == "left")
+    {
+        sprite_index = spr_mom_attack_left;
+    }
+    else
+    {
+        sprite_index = spr_mom_attack_right;
+    }
+
+    image_speed = guard_attack_animation_speed;
+}
+else
+{
+    if (facing_dir == "up")
+    {
+        sprite_index = spr_mom_fly_up;
+    }
+    else if (facing_dir == "down")
+    {
+        sprite_index = spr_mom_fly_down;
+    }
+    else if (facing_dir == "left")
+    {
+        sprite_index = spr_mom_fly_left;
+    }
+    else
+    {
+        sprite_index = spr_mom_fly_right;
+    }
+
+    image_speed = guard_fly_animation_speed;
 }

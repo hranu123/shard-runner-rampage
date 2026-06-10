@@ -142,7 +142,7 @@ else if (sprint_locked)
 	draw_set_colour(c_yellow);
     draw_text(box_x + 24, box_y + 66, "RECOVERING");
 }
-else if (is_sprinting)
+else if (global.player_is_sprinting)
 {
      draw_set_font(fnt_text);
 	draw_set_colour(c_lime);

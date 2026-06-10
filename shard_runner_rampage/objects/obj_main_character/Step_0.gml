@@ -1098,7 +1098,7 @@ if (global.health_current <= 0)
     if (!is_dead)
     {
         is_dead = true;
-        death_timer = death_delay;
+		death_timer = death_delay;
     }
 }
 

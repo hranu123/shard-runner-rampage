@@ -14,7 +14,7 @@ facing_dir = "down";
 // WEAPON MECHANICS
 // Rifle automatic fire cooldown
 rifle_fire_cooldown = 0;
-// Pistol ammo
+// Pistol ammo 
 pistol_max_ammo = 12;
 pistol_current_ammo = pistol_max_ammo;
 // Rifle ammo
@@ -126,7 +126,7 @@ health_is_critical = false;
 
 is_dead = false;
 death_timer = 0;
-death_delay = 120;
+death_delay = 30;
 
 // STAMINA
 stamina_max = 200;

@@ -51,7 +51,6 @@
     {"id":{"name":"spr_sword","path":"sprites/spr_sword/spr_sword.yy",},"order":24,},
     {"id":{"name":"obj_rifle_item","path":"objects/obj_rifle_item/obj_rifle_item.yy",},"order":8,},
     {"id":{"name":"spr_pistol_item","path":"sprites/spr_pistol_item/spr_pistol_item.yy",},"order":7,},
-    {"id":{"name":"spr_main_character_down","path":"sprites/spr_main_character_down/spr_main_character_down.yy",},"order":45,},
     {"id":{"name":"obj_shotgun_bullet","path":"objects/obj_shotgun_bullet/obj_shotgun_bullet.yy",},"order":12,},
     {"id":{"name":"spr_main_character_attack_right","path":"sprites/spr_main_character_attack_right/spr_main_character_attack_right.yy",},"order":22,},
     {"id":{"name":"spr_exit","path":"sprites/spr_exit/spr_exit.yy",},"order":57,},

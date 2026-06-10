@@ -2,7 +2,7 @@
 // SAVE MOVEMENT DIRECTION
 // =====================================
 
-mask_index = spr_main_character_right_walk;;
+mask_index = spr_main_character_right_walk;
 
 var moving = false;
 var fly_moving = false;
@@ -26,7 +26,6 @@ else if (move_right)
 
 // =====================================
 // GUN + MOVEMENT FACING DIRECTION
-// Gun controls facing only when not moving or flying
 // =====================================
 
 var using_gun =
@@ -63,7 +62,7 @@ if (is_flying && fly_timer > 0)
 
 
 // =====================================
-// GRAVITY SYSTEM
+// GROUND CHECK
 // =====================================
 
 is_grounded = place_meeting(x, y + 1, obj_ground);
@@ -79,8 +78,13 @@ if (is_grounded)
 }
 else
 {
-    is_grounded = false;
+    is_falling = true;
 }
+
+
+// =====================================
+// GRAVITY + VERTICAL COLLISION WHEN NOT FLYING
+// =====================================
 
 if (!is_grounded && !is_flying)
 {
@@ -90,30 +94,25 @@ if (!is_grounded && !is_flying)
     {
         vsp = max_fall_speed;
     }
-
-    is_falling = true;
 }
 
-if (!is_flying)
+if (!is_flying && vsp != 0)
 {
-    if (vsp != 0)
+    if (!place_meeting(x, y + vsp, obj_ground))
     {
-        if (place_meeting(x, y + vsp, obj_ground))
+        y += vsp;
+    }
+    else
+    {
+        while (!place_meeting(x, y + sign(vsp), obj_ground))
         {
-            while (!place_meeting(x, y + sign(vsp), obj_ground))
-            {
-                y += sign(vsp);
-            }
+            y += sign(vsp);
+        }
 
-            vsp = 0;
-            is_grounded = place_meeting(x, y + 1, obj_ground);
-            is_falling = false;
-            is_jumping = false;
-        }
-        else
-        {
-            y += vsp;
-        }
+        vsp = 0;
+        is_grounded = place_meeting(x, y + 1, obj_ground);
+        is_falling = false;
+        is_jumping = false;
     }
 }
 
@@ -122,7 +121,7 @@ if (!is_flying)
 // SPRINT SYSTEM
 // =====================================
 
-   global.player_is_sprinting = false;
+global.player_is_sprinting = false;
 
 if (stamina_current <= sprint_min_stamina)
 {
@@ -153,7 +152,7 @@ if (
 }
 else
 {
-       global.player_is_sprinting = false;
+    global.player_is_sprinting = false;
 
     var_main_speed = var_walk_speed;
     var_main_animation_speed = var_walk_animation;
@@ -162,7 +161,7 @@ else
 if (stamina_current <= 0)
 {
     stamina_current = 0;
-    is_sprinting = false;
+    global.player_is_sprinting = false;
     sprint_locked = true;
     sprint_cooldown = sprint_cooldown_time;
 
@@ -172,8 +171,7 @@ if (stamina_current <= 0)
 
 
 // =====================================
-// HORIZONTAL MOVEMENT
-// Disabled while flying
+// HORIZONTAL MOVEMENT - NOT FLYING
 // =====================================
 
 if (!is_flying)
@@ -184,8 +182,7 @@ if (!is_flying)
     {
         hsp = -var_main_speed;
     }
-
-    if (move_right)
+    else if (move_right)
     {
         hsp = var_main_speed;
     }
@@ -239,7 +236,7 @@ if (keyboard_check_pressed(vk_space))
         stamina_current -= jump_stamina_cost;
         jump_cooldown = jump_cooldown_time;
 
-        is_sprinting = false;
+        global.player_is_sprinting = false;
         var_main_speed = var_walk_speed;
     }
 }
@@ -296,7 +293,6 @@ if (!is_grounded && keyboard_check(vk_space))
 
 // =====================================
 // FLYING
-// Lift upward first, then allow control
 // =====================================
 
 if (is_flying)
@@ -328,8 +324,7 @@ if (is_flying)
             facing_dir = "left";
             fly_moving = true;
         }
-
-        if (move_right)
+        else if (move_right)
         {
             fly_hsp = fly_speed;
             facing_dir = "right";
@@ -342,12 +337,14 @@ if (is_flying)
             facing_dir = "up";
             fly_moving = true;
         }
-
-        if (move_down)
+        else if (move_down)
         {
-            fly_vsp = fly_speed;
-            facing_dir = "down";
-            fly_moving = true;
+            if (!place_meeting(x, y + fly_speed + 2, obj_ground))
+            {
+                fly_vsp = fly_speed;
+                facing_dir = "down";
+                fly_moving = true;
+            }
         }
     }
 
@@ -378,6 +375,8 @@ if (is_flying)
             {
                 y += sign(fly_vsp);
             }
+
+            fly_vsp = 0;
         }
     }
 
@@ -395,6 +394,22 @@ if (is_flying)
 }
 
 
+// =====================================
+// GROUND PUSH-OUT SAFETY FIX
+// =====================================
+
+if (place_meeting(x, y, obj_ground))
+{
+    while (place_meeting(x, y, obj_ground))
+    {
+        y -= 1;
+    }
+
+    vsp = 0;
+    is_flying = false;
+    is_falling = false;
+    is_grounded = true;
+}
 // =====================================
 // STAMINA RECOVERY
 // =====================================

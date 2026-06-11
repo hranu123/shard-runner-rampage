@@ -83,7 +83,7 @@ else
 
 
 // =====================================
-// GRAVITY + VERTICAL COLLISION WHEN NOT FLYING
+// GRAVITY
 // =====================================
 
 if (!is_grounded && !is_flying)
@@ -93,26 +93,6 @@ if (!is_grounded && !is_flying)
     if (vsp > max_fall_speed)
     {
         vsp = max_fall_speed;
-    }
-}
-
-if (!is_flying && vsp != 0)
-{
-    if (!place_meeting(x, y + vsp, obj_ground))
-    {
-        y += vsp;
-    }
-    else
-    {
-        while (!place_meeting(x, y + sign(vsp), obj_ground))
-        {
-            y += sign(vsp);
-        }
-
-        vsp = 0;
-        is_grounded = place_meeting(x, y + 1, obj_ground);
-        is_falling = false;
-        is_jumping = false;
     }
 }
 
@@ -167,40 +147,6 @@ if (stamina_current <= 0)
 
     var_main_speed = var_walk_speed;
     var_main_animation_speed = var_walk_animation;
-}
-
-
-// =====================================
-// HORIZONTAL MOVEMENT - NOT FLYING
-// =====================================
-
-if (!is_flying)
-{
-    var hsp = 0;
-
-    if (move_left)
-    {
-        hsp = -var_main_speed;
-    }
-    else if (move_right)
-    {
-        hsp = var_main_speed;
-    }
-
-    if (hsp != 0)
-    {
-        if (!place_meeting(x + hsp, y, obj_ground))
-        {
-            x += hsp;
-        }
-        else
-        {
-            while (!place_meeting(x + sign(hsp), y, obj_ground))
-            {
-                x += sign(hsp);
-            }
-        }
-    }
 }
 
 
@@ -292,6 +238,73 @@ if (!is_grounded && keyboard_check(vk_space))
 
 
 // =====================================
+// NORMAL MOVEMENT - NOT FLYING
+// Falling lands on ground normally
+// =====================================
+
+if (!is_flying)
+{
+    // Vertical falling/jumping collision
+    if (vsp != 0)
+    {
+        var move_y = abs(round(vsp));
+        var dir_y = sign(vsp);
+
+        repeat (move_y)
+        {
+            if (!place_meeting(x, y + dir_y, obj_ground))
+            {
+                y += dir_y;
+            }
+            else
+            {
+                vsp = 0;
+
+                if (dir_y > 0)
+                {
+                    is_grounded = true;
+                    is_falling = false;
+                    is_jumping = false;
+                }
+
+                break;
+            }
+        }
+    }
+
+    // Horizontal movement
+    var hsp = 0;
+
+    if (move_left)
+    {
+        hsp = -var_main_speed;
+    }
+    else if (move_right)
+    {
+        hsp = var_main_speed;
+    }
+
+    if (hsp != 0)
+    {
+        var move_x = abs(round(hsp));
+        var dir_x = sign(hsp);
+
+        repeat (move_x)
+        {
+            if (!place_meeting(x + dir_x, y, obj_ground))
+            {
+                x += dir_x;
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+}
+
+
+// =====================================
 // FLYING
 // =====================================
 
@@ -339,46 +352,63 @@ if (is_flying)
         }
         else if (move_down)
         {
-            if (!place_meeting(x, y + fly_speed + 2, obj_ground))
-            {
-                fly_vsp = fly_speed;
-                facing_dir = "down";
-                fly_moving = true;
-            }
+            fly_vsp = fly_speed;
+            facing_dir = "down";
+            fly_moving = true;
         }
     }
 
-    if (fly_hsp != 0)
-    {
-        if (!place_meeting(x + fly_hsp, y, obj_ground))
-        {
-            x += fly_hsp;
-        }
-        else
-        {
-            while (!place_meeting(x + sign(fly_hsp), y, obj_ground))
-            {
-                x += sign(fly_hsp);
-            }
-        }
-    }
-
+    // Flying vertical first
     if (fly_vsp != 0)
     {
-        if (!place_meeting(x, y + fly_vsp, obj_ground))
+        var fly_move_y = abs(round(fly_vsp));
+        var fly_dir_y = sign(fly_vsp);
+
+        repeat (fly_move_y)
         {
-            y += fly_vsp;
+            if (!place_meeting(x, y + fly_dir_y, obj_ground))
+            {
+                y += fly_dir_y;
+            }
+            else
+            {
+                fly_vsp = 0;
+                vsp = 0;
+
+                if (fly_dir_y > 0)
+                {
+                    is_flying = false;
+                    is_falling = false;
+                    is_grounded = true;
+                }
+
+                break;
+            }
+        }
+    }
+
+    // Flying horizontal second
+if (fly_hsp != 0)
+{
+    var fly_move_x = abs(round(fly_hsp));
+    var fly_dir_x = sign(fly_hsp);
+
+    repeat (fly_move_x)
+    {
+        if (!place_meeting(x + fly_dir_x, y, obj_ground))
+        {
+            x += fly_dir_x;
         }
         else
         {
-            while (!place_meeting(x, y + sign(fly_vsp), obj_ground))
-            {
-                y += sign(fly_vsp);
-            }
+            fly_hsp = 0;
 
-            fly_vsp = 0;
+            // Do NOT push upward here.
+            // Side contact should only stop horizontal flying.
+            break;
         }
     }
+}
 
     if (!keyboard_check(vk_space) || fly_timer <= 0 || stamina_current <= 0)
     {
@@ -392,13 +422,35 @@ if (is_flying)
         stamina_current = max(stamina_current, 0);
     }
 }
+// =====================================
+// FINAL GROUND STATE CHECK
+// Put this at the VERY BOTTOM of Step Event
+// =====================================
 
+is_grounded = place_meeting(x, y + 1, obj_ground);
+
+if (is_grounded)
+{
+    is_falling = false;
+    is_jumping = false;
+
+    if (vsp > 0)
+    {
+        vsp = 0;
+    }
+}
+else if (!is_flying)
+{
+    is_falling = true;
+}
 
 // =====================================
-// GROUND PUSH-OUT SAFETY FIX
+// FLYING SIDE-CONTACT REDIRECT ONLY
+// Allows redirect to top ONLY while flying.
+// Falling side-contact will NOT push you up.
 // =====================================
 
-if (place_meeting(x, y, obj_ground))
+if (place_meeting(x, y, obj_ground) && is_flying)
 {
     while (place_meeting(x, y, obj_ground))
     {
@@ -410,7 +462,7 @@ if (place_meeting(x, y, obj_ground))
     is_falling = false;
     is_grounded = true;
 }
-// =====================================
+//===================================
 // STAMINA RECOVERY
 // =====================================
 

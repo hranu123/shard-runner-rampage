@@ -11,7 +11,7 @@ if (!variable_global_exists("weapon_inventory") || array_length(global.weapon_in
 }
 
 var slot_size = 64;
-var start_x = 20;
+var start_x = 80;
 var start_y = 80;
 var gap = 10;
 

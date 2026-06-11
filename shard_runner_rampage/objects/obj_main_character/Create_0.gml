@@ -162,22 +162,22 @@ is_flying = false;
 space_hold_timer = 0;
 fly_hold_delay = 30;
 
-fly_lift_speed = 20;
+fly_lift_speed = 80;
 fly_lift_time = 5;
 fly_lift_timer = 0;
 is_fly_lifting = false;
-fly_speed = 5;
+fly_speed = 15;
 
 fly_time_max = 180;
 fly_timer = 0;
 
 fly_min_stamina = 10;
-fly_stamina_drain = 0.8;
+fly_stamina_drain = 0.6;
 
 fly_cooldown = 0;
 fly_cooldown_time = 90;
 
-fly_animation_speed = 0.05;
+fly_animation_speed = 0.08;
 fly_anim_frame = 0;
 last_fly_sprite = noone;
 // =====================================
@@ -187,7 +187,7 @@ last_fly_sprite = noone;
 vsp = 0;
 
 gravity_force = 0.6;
-jump_force = -15;
+jump_force = -25;
 max_fall_speed = 15;
 
 is_grounded = false;

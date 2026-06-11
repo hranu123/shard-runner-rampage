@@ -67,7 +67,6 @@
     {"id":{"name":"spr_shotgun_inventory","path":"sprites/spr_shotgun_inventory/spr_shotgun_inventory.yy",},"order":39,},
     {"id":{"name":"spr_mom_attack_right","path":"sprites/spr_mom_attack_right/spr_mom_attack_right.yy",},"order":70,},
     {"id":{"name":"obj_rpg","path":"objects/obj_rpg/obj_rpg.yy",},"order":14,},
-    {"id":{"name":"spr_mom_fly_left46","path":"sprites/spr_mom_fly_left46/spr_mom_fly_left46.yy",},"order":68,},
     {"id":{"name":"obj_rpg_item","path":"objects/obj_rpg_item/obj_rpg_item.yy",},"order":15,},
     {"id":{"name":"obj_rpg_bullet","path":"objects/obj_rpg_bullet/obj_rpg_bullet.yy",},"order":16,},
     {"id":{"name":"spr_pistol_inventory","path":"sprites/spr_pistol_inventory/spr_pistol_inventory.yy",},"order":37,},

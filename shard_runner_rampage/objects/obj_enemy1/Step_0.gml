@@ -236,7 +236,7 @@ else
 x += hsp;
 y += vsp;
 // =====================================
-// ENEMY CONTACT DAMAGE
+// ENEMY CONTACT DAMAGE - DISTANCE BASED
 // =====================================
 
 if (enemy_damage_cooldown > 0)
@@ -244,23 +244,26 @@ if (enemy_damage_cooldown > 0)
     enemy_damage_cooldown--;
 }
 
-var hit_player = collision_circle(x, y, 28, obj_main_character, false, true);
-
-if (hit_player != noone && !hit_player.is_dead)
+if (player != noone && !player.is_dead)
 {
-    if (enemy_damage_cooldown <= 0)
+    var attack_dist = point_distance(x, y, player.x, player.y);
+
+    if (attack_dist <= 42)
     {
-        global.health_current -= enemy_contact_damage;
-        global.health_current = clamp(global.health_current, 0, global.health_max);
+        if (enemy_damage_cooldown <= 0)
+        {
+            global.health_current -= enemy_contact_damage;
+            global.health_current = clamp(global.health_current, 0, global.health_max);
 
-        hit_player.health_damage_flash_timer = hit_player.health_damage_flash_duration;
-        hit_player.health_regen_timer = 0;
+            player.health_damage_flash_timer = player.health_damage_flash_duration;
+            player.health_regen_timer = 0;
 
-        enemy_damage_cooldown = enemy_damage_cooldown_max;
+            enemy_damage_cooldown = enemy_damage_cooldown_max;
 
-        is_attacking_player = true;
-        attack_sprite_timer = attack_sprite_duration;
-        image_index = 0;
+            is_attacking_player = true;
+            attack_sprite_timer = attack_sprite_duration;
+            image_index = 0;
+        }
     }
 }
 

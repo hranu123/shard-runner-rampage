@@ -1,3 +1,8 @@
+//ENEMY SPAWN POINT
+spawn_x = x;
+spawn_y = y;
+
+
 // =====================================
 // ENEMY HEALTH SYSTEM
 // =====================================

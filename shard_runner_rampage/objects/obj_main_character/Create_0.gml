@@ -57,12 +57,12 @@ global.equipped_weapon = "sword";
 // Sword attack settings
 is_sword_attacking = false;
 sword_attack_timer = 0;
-sword_attack_duration = 20;
+sword_attack_duration = 15;
 
 sword_attack_frame = 0;
-sword_attack_speed = 0.35;
+sword_attack_speed = 0.55;
 
-sword_damage = 10;
+sword_damage = 25;
 sword_range = 45;
 // =====================================
 // HEALTH SYSTEM

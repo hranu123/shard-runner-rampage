@@ -6,15 +6,16 @@ draw_self();
 
 
 // =====================================
-// PROFESSIONAL ENEMY HEALTH BAR
-// Always visible above enemy
+// LARGE PROFESSIONAL ENEMY HEALTH BAR
+// Always visible directly above enemy
 // =====================================
 
-var bar_w = enemy_health_bar_width;
-var bar_h = enemy_health_bar_height;
+var bar_w = 115;
+var bar_h = 20;
 
+// Negative Y places it above the enemy
 var bar_x = x - (bar_w * 0.5);
-var bar_y = y + enemy_health_bar_y_offset;
+var bar_y = y - 80;
 
 var current_ratio = clamp(enemy_health_current / enemy_health_max, 0, 1);
 var display_ratio = clamp(enemy_health_display / enemy_health_max, 0, 1);
@@ -25,6 +26,19 @@ draw_set_alpha(0.45);
 draw_set_color(c_black);
 
 draw_roundrect(
+    bar_x - 4,
+    bar_y - 4,
+    bar_x + bar_w + 4,
+    bar_y + bar_h + 4,
+    false
+);
+
+
+// Outer dark frame
+draw_set_alpha(1);
+draw_set_color(make_color_rgb(25, 25, 25));
+
+draw_roundrect(
     bar_x - 3,
     bar_y - 3,
     bar_x + bar_w + 3,
@@ -33,21 +47,8 @@ draw_roundrect(
 );
 
 
-// Outer frame
-draw_set_alpha(1);
-draw_set_color(make_color_rgb(35, 35, 35));
-
-draw_roundrect(
-    bar_x - 2,
-    bar_y - 2,
-    bar_x + bar_w + 2,
-    bar_y + bar_h + 2,
-    false
-);
-
-
-// Empty bar
-draw_set_color(make_color_rgb(20, 20, 20));
+// Inner empty background
+draw_set_color(make_color_rgb(10, 10, 10));
 
 draw_roundrect(
     bar_x,
@@ -59,7 +60,7 @@ draw_roundrect(
 
 
 // Delayed damage bar
-draw_set_color(make_color_rgb(120, 20, 20));
+draw_set_color(make_color_rgb(120, 25, 25));
 
 draw_roundrect(
     bar_x,
@@ -70,14 +71,27 @@ draw_roundrect(
 );
 
 
-// Current health - red
-draw_set_color(make_color_rgb(230, 40, 40));
+// Current health bar
+draw_set_color(make_color_rgb(235, 45, 45));
 
 draw_roundrect(
     bar_x,
     bar_y,
     bar_x + (bar_w * current_ratio),
     bar_y + bar_h,
+    false
+);
+
+
+// Small top highlight
+draw_set_alpha(0.25);
+draw_set_color(c_white);
+
+draw_rectangle(
+    bar_x + 2,
+    bar_y + 2,
+    bar_x + (bar_w * current_ratio) - 2,
+    bar_y + 4,
     false
 );
 
@@ -98,7 +112,7 @@ if (enemy_damage_flash_timer > 0)
 }
 
 
-// Border
+// Clean white border
 draw_set_alpha(1);
 draw_set_color(c_white);
 

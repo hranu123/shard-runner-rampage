@@ -998,12 +998,61 @@ if (global.equipped_weapon == "sword")
         {
             hit_x = x + sword_range;
         }
-        else
+        else if (facing_dir == "up")
         {
-            hit_x = x;
+            hit_y = y - sword_range;
+        }
+        else if (facing_dir == "down")
+        {
+            hit_y = y + sword_range;
         }
 
-        var enemy = instance_place(hit_x, hit_y, obj_enemy);
+        var enemy = collision_circle(hit_x, hit_y, 35, obj_enemy, false, true);
+
+        if (enemy != noone)
+        {
+            with (enemy)
+            {
+                enemy_health_current -= other.sword_damage;
+                enemy_damage_flash_timer = enemy_damage_flash_duration;
+            }
+        }
+    }
+}
+// =====================================
+// SWORD ATTACK
+// Damages obj_enemy1 when enemy is within sword range
+// =====================================
+
+if (global.equipped_weapon == "sword")
+{
+    if (mouse_check_button_pressed(mb_left) && !is_sword_attacking)
+    {
+        is_sword_attacking = true;
+        sword_attack_timer = sword_attack_duration;
+        sword_attack_frame = 0;
+
+        var hit_x = x;
+        var hit_y = y;
+
+        if (facing_dir == "left")
+        {
+            hit_x = x - sword_range;
+        }
+        else if (facing_dir == "right")
+        {
+            hit_x = x + sword_range;
+        }
+        else if (facing_dir == "up")
+        {
+            hit_y = y - sword_range;
+        }
+        else if (facing_dir == "down")
+        {
+            hit_y = y + sword_range;
+        }
+
+        var enemy = collision_circle(hit_x, hit_y, 35, obj_enemy1, false, true);
 
         if (enemy != noone)
         {
@@ -1192,8 +1241,45 @@ if (is_dead)
         is_falling = false;
         is_flying = false;
         global.player_is_sprinting = false;
+		
+		// Reset guard detection
+		global.has_discovered_player1 = false
+		global.has_discovered_player2 = false
+        
+		// Reset enemies to their level starting positions
+		with (obj_enemy)
+		{
+			x = spawn_x;
+			y = spawn_y;
 
-        // Reset health
+    hsp = 0;
+    vsp = 0;
+
+    is_chasing = false;
+    is_attacking_player = false;
+
+    attack_sprite_timer = 0;
+    enemy_damage_cooldown = 0;
+}
+
+		with (obj_enemy1)
+{
+		x = xstart;
+		y = ystart;
+
+		hsp = 0;
+		vsp = 0;
+
+		is_chasing = false;
+		is_attacking_player = false;
+		attack_sprite_timer = 0;
+
+		enemy_damage_cooldown = 0;
+}
+
+
+
+		// Reset health
         global.health_current = global.health_max;
         health_display = global.health_current;
 

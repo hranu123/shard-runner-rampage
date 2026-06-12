@@ -2,7 +2,10 @@
   "resourceType": "GMObject",
   "resourceVersion": "1.0",
   "name": "obj_main_character",
-  "spriteId": null,
+  "spriteId": {
+    "name": "spr_main_character_right_walk",
+    "path": "sprites/spr_main_character_right_walk/spr_main_character_right_walk.yy",
+  },
   "solid": false,
   "visible": true,
   "managed": true,

@@ -1,6 +1,3 @@
-//COLLISION MASK
-mask_index = spr_mom_fly_down;
-
 // =====================================
 // ENEMY HEALTH SYSTEM
 // =====================================

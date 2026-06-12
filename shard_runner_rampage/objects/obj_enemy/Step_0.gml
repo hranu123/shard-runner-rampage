@@ -313,5 +313,3 @@ else
 
     image_speed = guard_fly_animation_speed;
 }
-
-mask_index = spr_mom_fly_down;

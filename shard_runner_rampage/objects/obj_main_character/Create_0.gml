@@ -204,7 +204,7 @@ mask_index = spr_main_character_right_walk;
 pistol_right_hand_x = 65;
 pistol_right_hand_y = 40;
 pistol_left_hand_x = 4;
-pistol_left_hand_y = 60;
+pistol_left_hand_y = 10;
 pistol_barrel_distance = 12;
 pistol_bullet_y_offset = 0;
 

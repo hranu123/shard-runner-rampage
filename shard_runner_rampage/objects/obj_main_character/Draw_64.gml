@@ -213,8 +213,8 @@ if (global.equipped_weapon != noone && global.equipped_weapon != "sword")
     var ammo_box_w = 220;
     var ammo_box_h = 82;
 
-    var ammo_box_x = display_get_gui_width() - ammo_box_w - 32;
-    var ammo_box_y = display_get_gui_height() - ammo_box_h - 32;
+    var ammo_box_x = display_get_gui_width() - ammo_box_w - 250 ;
+    var ammo_box_y = display_get_gui_height() - ammo_box_h - 112;
 
 
     // Background panel

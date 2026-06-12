@@ -55,8 +55,8 @@ if (global.equipped_weapon != noone && global.equipped_weapon != "sword")
     {
         var base_y = y - jump_z;
 
-        var right_hand_x = 65;
-        var right_hand_y = 45;
+        var right_hand_x = 75;
+        var right_hand_y = 105;
 
         var left_hand_x = 4;
         var left_hand_y = 45;

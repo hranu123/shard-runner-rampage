@@ -1,7 +1,7 @@
 // MOVEMENT VARIABLES
-var_walk_speed = 3;
+var_walk_speed = 4;
 
-var_main_sprint = 7;
+var_main_sprint = 8;
 
 var_main_speed = var_walk_speed;
 
@@ -88,7 +88,7 @@ health_damage_flash_duration = 15;
 
 invincible = false;
 invincible_timer = 0;
-invincible_duration = 30;
+invincible_duration = 10;
 
 
 // =====================================

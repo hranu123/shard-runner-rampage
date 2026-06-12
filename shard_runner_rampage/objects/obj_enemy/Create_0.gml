@@ -31,11 +31,11 @@ global.enemy_eliminated_message_duration = 90;
 // GUARD
 // =====================================
 
-guard_patrol_speed = 1.5;
-guard_fly_speed = 4;
+guard_patrol_speed = 3.5;
+guard_fly_speed = 9;
 
-guard_walk_detect_range = 125;
-guard_sprint_detect_range = 400;
+guard_walk_detect_range = 350;
+guard_sprint_detect_range = 650;
 
 guard_patrol_direction = choose(-1, 1); // -1 left, 1 right
 
@@ -52,7 +52,6 @@ is_grounded = false;
 is_falling = false;
 is_flying = false;
 is_chasing = false;
-is_sprinting = false;
 
 facing_dir = "right";
 
@@ -64,3 +63,7 @@ is_attacking_player = false;
 attack_sprite_timer = 0;
 attack_sprite_duration = 20;
 guard_attack_animation_speed = 2;
+
+enemy_damage_cooldown = 0;
+enemy_damage_cooldown_max = 45;
+enemy_contact_damage = 10;

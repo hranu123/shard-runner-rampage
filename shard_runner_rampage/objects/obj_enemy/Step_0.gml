@@ -143,14 +143,12 @@ vsp = 0;
 
 if (is_chasing && player != noone)
 {
-    var move_dir = point_direction(x, y, player.x, player.y);
-
-    hsp = lengthdir_x(guard_fly_speed, move_dir);
-    vsp = lengthdir_y(guard_fly_speed, move_dir);
+    var dist_to_player = point_distance(x, y, player.x, player.y);
 
     var dx = player.x - x;
     var dy = player.y - y;
 
+    // Face the player even when not moving
     if (abs(dx) > abs(dy))
     {
         if (dx < 0)
@@ -173,8 +171,21 @@ if (is_chasing && player != noone)
             facing_dir = "down";
         }
     }
-}
 
+    // Stop pushing into player when close enough
+    if (dist_to_player > 32)
+    {
+        var move_dir = point_direction(x, y, player.x, player.y);
+
+        hsp = lengthdir_x(guard_fly_speed, move_dir);
+        vsp = lengthdir_y(guard_fly_speed, move_dir);
+    }
+    else
+    {
+        hsp = 0;
+        vsp = 0;
+    }
+}
 
 // =====================================
 // PATROL RANDOMLY UNTIL DETECTION
@@ -224,7 +235,34 @@ else
 
 x += hsp;
 y += vsp;
+// =====================================
+// ENEMY CONTACT DAMAGE
+// =====================================
 
+if (enemy_damage_cooldown > 0)
+{
+    enemy_damage_cooldown--;
+}
+
+var hit_player = collision_circle(x, y, 28, obj_main_character, false, true);
+
+if (hit_player != noone && !hit_player.is_dead)
+{
+    if (enemy_damage_cooldown <= 0)
+    {
+        global.health_current -= enemy_contact_damage;
+        global.health_current = clamp(global.health_current, 0, global.health_max);
+
+        hit_player.health_damage_flash_timer = hit_player.health_damage_flash_duration;
+        hit_player.health_regen_timer = 0;
+
+        enemy_damage_cooldown = enemy_damage_cooldown_max;
+
+        is_attacking_player = true;
+        attack_sprite_timer = attack_sprite_duration;
+        image_index = 0;
+    }
+}
 
 // =====================================
 // SPRITE SYSTEM - FLY SPRITES ONLY

@@ -444,24 +444,6 @@ else if (!is_flying)
     is_falling = true;
 }
 
-// =====================================
-// FLYING SIDE-CONTACT REDIRECT ONLY
-// Allows redirect to top ONLY while flying.
-// Falling side-contact will NOT push you up.
-// =====================================
-
-if (place_meeting(x, y, obj_ground) && is_flying)
-{
-    while (place_meeting(x, y, obj_ground))
-    {
-        y -= 1;
-    }
-
-    vsp = 0;
-    is_flying = false;
-    is_falling = false;
-    is_grounded = true;
-}
 //===================================
 // STAMINA RECOVERY
 // =====================================
@@ -502,7 +484,15 @@ if (is_flying)
 // FALLING
 else if (is_falling)
 {
-    new_sprite = spr_main_character_down_fly;
+    if (facing_dir == "left")
+        new_sprite = spr_main_character_left_fly;
+    else if (facing_dir == "right")
+        new_sprite = spr_main_character_right_fly;
+    else if (facing_dir == "up")
+        new_sprite = spr_main_character_up_fly;
+    else
+        new_sprite = spr_main_character_down_fly;
+
     new_speed = 0;
     manual_animation = true;
 }

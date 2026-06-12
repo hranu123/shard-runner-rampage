@@ -202,32 +202,32 @@ mask_index = spr_main_character_right_walk;
 
 // PISTOL
 pistol_right_hand_x = 65;
-pistol_right_hand_y = 40;
-pistol_left_hand_x = 4;
-pistol_left_hand_y = 10;
-pistol_barrel_distance = 12;
+pistol_right_hand_y = 110;
+pistol_left_hand_x = 65;
+pistol_left_hand_y = 130;
+pistol_barrel_distance = 100;
 pistol_bullet_y_offset = 0;
 
 // RIFLE
 rifle_right_hand_x = 65;
-rifle_right_hand_y = 25;
-rifle_left_hand_x = 4;
-rifle_left_hand_y = 45;
-rifle_barrel_distance = 48;
+rifle_right_hand_y = 105;
+rifle_left_hand_x = 65;
+rifle_left_hand_y = 120;
+rifle_barrel_distance = 150;
 rifle_bullet_y_offset = 0;
 
 // SHOTGUN
 shotgun_right_hand_x = 65;
-shotgun_right_hand_y = 30;
-shotgun_left_hand_x = 4;
-shotgun_left_hand_y = 50;
-shotgun_barrel_distance = 48;
+shotgun_right_hand_y = 105;
+shotgun_left_hand_x = 65;
+shotgun_left_hand_y = 120;
+shotgun_barrel_distance = 200;
 shotgun_bullet_y_offset = 0;
 
 // RPG
 rpg_right_hand_x = 70;
-rpg_right_hand_y = 28;
-rpg_left_hand_x = -8;
-rpg_left_hand_y = 70;
+rpg_right_hand_y = 115;
+rpg_left_hand_x = 70;
+rpg_left_hand_y = 155;
 rpg_barrel_distance = 50;
 rpg_bullet_y_offset = -6;

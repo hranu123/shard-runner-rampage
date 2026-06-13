@@ -827,61 +827,88 @@ draw_set_halign(fa_left);
 draw_set_valign(fa_top);
 draw_set_color(c_white);
 // =====================================
-// ENEMY ELIMINATED MESSAGE
+// ELIMINATION MESSAGE SYSTEM
 // =====================================
 
+var elim_draw = false;
+var elim_text = "";
+var elim_timer = 0;
+var elim_duration = 90;
+
+
+// Enemy eliminated message
 if (global.enemy_eliminated_message_timer > 0)
+{
+    elim_draw = true;
+    elim_text = global.enemy_eliminated_message_text;
+    elim_timer = global.enemy_eliminated_message_timer;
+    elim_duration = global.enemy_eliminated_message_duration;
+
+    global.enemy_eliminated_message_timer--;
+}
+
+
+// Test dummy eliminated message
+if (global.dummy_eliminated_message_timer > 0)
+{
+    elim_draw = true;
+    elim_text = global.dummy_eliminated_message_text;
+    elim_timer = global.dummy_eliminated_message_timer;
+    elim_duration = global.dummy_eliminated_message_duration;
+
+    global.dummy_eliminated_message_timer--;
+}
+
+
+// =====================================
+// DRAW ELIMINATION MESSAGE
+// =====================================
+
+if (elim_draw == true)
 {
     var gui_w = display_get_gui_width();
 
     var msg_x = gui_w * 0.5;
     var msg_y = 95;
 
-    var alpha =
-        global.enemy_eliminated_message_timer /
-        global.enemy_eliminated_message_duration;
+    var alpha = elim_timer / elim_duration;
 
-    var scale =
-        1.0 + (0.05 * abs(sin(current_time * 0.01)));
+    var pulse_scale = 1.0 + (0.05 * abs(sin(current_time * 0.01)));
 
-    // Background strip
     draw_set_alpha(alpha * 0.35);
     draw_set_color(c_black);
 
     draw_rectangle(
-        msg_x - 230,
-        msg_y - 24,
-        msg_x + 230,
-        msg_y + 24,
+        msg_x - 280,
+        msg_y - 26,
+        msg_x + 280,
+        msg_y + 26,
         false
     );
 
-    // Text
     draw_set_alpha(alpha);
     draw_set_halign(fa_center);
     draw_set_valign(fa_middle);
 
-    // Shadow
     draw_set_color(c_black);
 
     draw_text_transformed(
         msg_x + 2,
         msg_y + 2,
-        global.enemy_eliminated_message_text,
-        scale,
-        scale,
+        elim_text,
+        pulse_scale,
+        pulse_scale,
         0
     );
 
-    // Main text
     draw_set_color(make_color_rgb(255, 220, 60));
 
     draw_text_transformed(
         msg_x,
-        msg_y,
-        global.enemy_eliminated_message_text,
-        scale,
-        scale,
+	    msg_y,
+        elim_text,
+        pulse_scale,
+        pulse_scale,
         0
     );
 }
@@ -895,5 +922,3 @@ draw_set_alpha(1);
 draw_set_halign(fa_left);
 draw_set_valign(fa_top);
 draw_set_color(c_white);
-
-

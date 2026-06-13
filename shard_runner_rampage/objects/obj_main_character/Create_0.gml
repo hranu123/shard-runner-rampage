@@ -64,6 +64,7 @@ sword_attack_speed = 0.55;
 
 sword_damage = 25;
 sword_range = 45;
+sword_dummy_range = 225
 // =====================================
 // HEALTH SYSTEM
 // =====================================

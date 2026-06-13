@@ -966,7 +966,8 @@ if (global.equipped_weapon != noone && global.equipped_weapon != "sword" && !is_
 
 // =====================================
 // SWORD ATTACK
-// Damages obj_enemy when enemy is within sword range
+// Enemy uses sword_range
+// Dummy uses sword_dummy_range
 // =====================================
 
 if (global.equipped_weapon == "sword")
@@ -977,31 +978,61 @@ if (global.equipped_weapon == "sword")
         sword_attack_timer = sword_attack_duration;
         sword_attack_frame = 0;
 
-        var hit_x = x;
-        var hit_y = y;
+        var enemy_hit_x = x;
+        var enemy_hit_y = y;
+
+        var dummy_hit_x = x;
+        var dummy_hit_y = y;
 
         if (facing_dir == "left")
         {
-            hit_x = x - sword_range;
+            enemy_hit_x = x - sword_range;
+            dummy_hit_x = x - sword_dummy_range;
         }
         else if (facing_dir == "right")
         {
-            hit_x = x + sword_range;
+            enemy_hit_x = x + sword_range;
+            dummy_hit_x = x + sword_dummy_range;
         }
         else if (facing_dir == "up")
         {
-            hit_y = y - sword_range;
+            enemy_hit_y = y - sword_range;
+            dummy_hit_y = y - sword_dummy_range;
         }
         else if (facing_dir == "down")
         {
-            hit_y = y + sword_range;
+            enemy_hit_y = y + sword_range;
+            dummy_hit_y = y + sword_dummy_range;
         }
 
-        var enemy = collision_circle(hit_x, hit_y, 35, obj_enemy, false, true);
+        // Normal enemies
+        var hit_enemy = collision_circle(enemy_hit_x, enemy_hit_y, 35, obj_enemy, false, true);
+        var hit_enemy1 = collision_circle(enemy_hit_x, enemy_hit_y, 35, obj_enemy1, false, true);
 
-        if (enemy != noone)
+        // Test dummy
+        var hit_dummy = collision_circle(dummy_hit_x, dummy_hit_y, 35, obj_dummy, false, true);
+
+        if (hit_enemy != noone)
         {
-            with (enemy)
+            with (hit_enemy)
+            {
+                enemy_health_current -= other.sword_damage;
+                enemy_damage_flash_timer = enemy_damage_flash_duration;
+            }
+        }
+
+        if (hit_enemy1 != noone)
+        {
+            with (hit_enemy1)
+            {
+                enemy_health_current -= other.sword_damage;
+                enemy_damage_flash_timer = enemy_damage_flash_duration;
+            }
+        }
+
+        if (hit_dummy != noone)
+        {
+            with (hit_dummy)
             {
                 enemy_health_current -= other.sword_damage;
                 enemy_damage_flash_timer = enemy_damage_flash_duration;
@@ -1009,53 +1040,6 @@ if (global.equipped_weapon == "sword")
         }
     }
 }
-// =====================================
-// SWORD ATTACK
-// Damages obj_enemy1 when enemy is within sword range
-// =====================================
-
-if (global.equipped_weapon == "sword")
-{
-    if (mouse_check_button_pressed(mb_left) && !is_sword_attacking)
-    {
-        is_sword_attacking = true;
-        sword_attack_timer = sword_attack_duration;
-        sword_attack_frame = 0;
-
-        var hit_x = x;
-        var hit_y = y;
-
-        if (facing_dir == "left")
-        {
-            hit_x = x - sword_range;
-        }
-        else if (facing_dir == "right")
-        {
-            hit_x = x + sword_range;
-        }
-        else if (facing_dir == "up")
-        {
-            hit_y = y - sword_range;
-        }
-        else if (facing_dir == "down")
-        {
-            hit_y = y + sword_range;
-        }
-
-        var enemy = collision_circle(hit_x, hit_y, 35, obj_enemy1, false, true);
-
-        if (enemy != noone)
-        {
-            with (enemy)
-            {
-                enemy_health_current -= other.sword_damage;
-                enemy_damage_flash_timer = enemy_damage_flash_duration;
-            }
-        }
-    }
-}
-
-
 // =====================================
 // SWORD ATTACK ANIMATION TIMER
 // =====================================
@@ -1241,8 +1225,10 @@ if (is_dead)
 		{
 			x = spawn_x;
 			y = spawn_y;
-
-    hsp = 0;
+		//Reset enemies health
+		enemy_health_current = enemy_health_max;
+    
+	hsp = 0;
     vsp = 0;
 
     is_chasing = false;

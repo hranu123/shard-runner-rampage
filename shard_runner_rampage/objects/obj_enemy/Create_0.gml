@@ -37,7 +37,7 @@ global.enemy_eliminated_message_duration = 90;
 // =====================================
 
 guard_patrol_speed = 3.5;
-guard_fly_speed = 9;
+guard_fly_speed = 7;
 
 guard_walk_detect_range = 350;
 guard_sprint_detect_range = 650;
@@ -70,5 +70,5 @@ attack_sprite_duration = 20;
 guard_attack_animation_speed = 2;
 
 enemy_damage_cooldown = 0;
-enemy_damage_cooldown_max = 45;
+enemy_damage_cooldown_max = 35;
 enemy_contact_damage = 10;

@@ -144,9 +144,9 @@ vsp = 0;
 
 if (is_chasing && player != noone)
 {
-    var follow_distance_x = 64;
-    var follow_distance_y = 52;
-    var stop_distance = 10;
+    var follow_distance_x = 180;
+    var follow_distance_y = 120;
+    var stop_distance = 15;
 
     var target_x = player.x;
     var target_y = player.y;

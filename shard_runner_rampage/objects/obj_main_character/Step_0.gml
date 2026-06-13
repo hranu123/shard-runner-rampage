@@ -1262,7 +1262,11 @@ if (is_dead)
         // Reset death state
         is_dead = false;
         death_timer = 0;
-
+		// Reset ammo
+		pistol_current_ammo = pistol_max_ammo
+		shotgun_current_ammo = shotgun_max_ammo
+		rpg_current_ammo = rpg_max_ammo
+		rifle_current_ammo = rifle_max_ammo
         // Give short invincibility after respawn
         invincible = true;
         invincible_timer = invincible_duration;

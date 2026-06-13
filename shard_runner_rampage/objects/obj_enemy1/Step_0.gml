@@ -139,16 +139,56 @@ vsp = 0;
 
 // =====================================
 // CHASE PLAYER
+// Enemy follows behind player and avoids moving in front
 // =====================================
 
 if (is_chasing && player != noone)
 {
-    var dist_to_player = point_distance(x, y, player.x, player.y);
+    var follow_distance_x = 180;
+    var follow_distance_y = 120;
+    var stop_distance = 15;
 
+    var target_x = player.x;
+    var target_y = player.y;
+
+    // Behind target based on player's facing direction
+    if (player.facing_dir == "right")
+    {
+        target_x = player.x - follow_distance_x;
+        target_y = player.y;
+    }
+    else if (player.facing_dir == "left")
+    {
+        target_x = player.x + follow_distance_x;
+        target_y = player.y;
+    }
+    else if (player.facing_dir == "up")
+    {
+        target_x = player.x;
+        target_y = player.y + follow_distance_y;
+    }
+    else if (player.facing_dir == "down")
+    {
+        target_x = player.x;
+        target_y = player.y - follow_distance_y;
+    }
+
+    // Extra correction for left-facing player
+    // Prevents enemy from slipping to the front-left side
+    if (player.facing_dir == "left")
+    {
+        if (x < player.x)
+        {
+            target_x = player.x + follow_distance_x;
+        }
+    }
+
+    var dist_to_target = point_distance(x, y, target_x, target_y);
+
+    // Face the player
     var dx = player.x - x;
     var dy = player.y - y;
 
-    // Face the player even when not moving
     if (abs(dx) > abs(dy))
     {
         if (dx < 0)
@@ -172,10 +212,10 @@ if (is_chasing && player != noone)
         }
     }
 
-    // Stop pushing into player when close enough
-    if (dist_to_player > 32)
+    // Move toward behind target
+    if (dist_to_target > stop_distance)
     {
-        var move_dir = point_direction(x, y, player.x, player.y);
+        var move_dir = point_direction(x, y, target_x, target_y);
 
         hsp = lengthdir_x(guard_fly_speed, move_dir);
         vsp = lengthdir_y(guard_fly_speed, move_dir);
@@ -237,6 +277,7 @@ x += hsp;
 y += vsp;
 // =====================================
 // ENEMY CONTACT DAMAGE - DISTANCE BASED
+// Works even when enemy stands behind player
 // =====================================
 
 if (enemy_damage_cooldown > 0)
@@ -248,7 +289,7 @@ if (player != noone && !player.is_dead)
 {
     var attack_dist = point_distance(x, y, player.x, player.y);
 
-    if (attack_dist <= 42)
+    if (attack_dist <= 200)
     {
         if (enemy_damage_cooldown <= 0)
         {

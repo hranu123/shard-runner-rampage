@@ -22,9 +22,9 @@ enemy_rifle_damage = 20;
 enemy_pistol_damage = 10;
 enemy_shotgun_damage = 50;
 // Health bar settings
-enemy_health_bar_width = 70;
-enemy_health_bar_height = 8;
-enemy_health_bar_y_offset = -45;
+dummy_health_bar_width = 360;
+dummy_health_bar_height = 34;
+dummy_health_bar_y_offset = -310;
 
 // Death
 enemy_is_dead = false;

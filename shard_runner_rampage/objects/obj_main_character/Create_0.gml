@@ -12,6 +12,7 @@ var_sprint_animation = 2.5;
 var_main_animation_speed = var_walk_animation;
 facing_dir = "down";
 // WEAPON MECHANICS
+gun_aim_dir = 0
 // Rifle automatic fire cooldown
 rifle_fire_cooldown = 0;
 // Pistol ammo 
@@ -130,7 +131,7 @@ death_timer = 0;
 death_delay = 30;
 
 // STAMINA
-stamina_max = 200;
+stamina_max = 250;
 stamina_current = stamina_max;
 stamina_recover_speed = 0.5;
 
@@ -173,7 +174,7 @@ fly_time_max = 180;
 fly_timer = 0;
 
 fly_min_stamina = 10;
-fly_stamina_drain = 0.6;
+fly_stamina_drain = 0.7;
 
 fly_cooldown = 0;
 fly_cooldown_time = 90;

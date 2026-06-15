@@ -110,19 +110,34 @@ var player = instance_nearest(x, y, obj_main_character);
 
 
 // =====================================
-// DETECTION
+// DETECTION / GIVE UP CHASE
 // =====================================
 
 if (player != noone)
 {
     var dist_to_player = point_distance(x, y, player.x, player.y);
 
-    if (
-        dist_to_player <= guard_walk_detect_range ||
-        (global.player_is_sprinting == true && dist_to_player <= guard_sprint_detect_range)
-    )
+    // If player gets too far, stop chasing and return to spawn
+    if (is_chasing && dist_to_player > guard_return_distance)
     {
-        global.has_discovered_player2 = true;
+        global.has_discovered_player2 = false;
+        is_chasing = false;
+        is_returning_to_spawn = true;
+        is_attacking_player = false;
+        attack_sprite_timer = 0;
+    }
+
+    // Detect player only if not returning
+    if (!is_returning_to_spawn)
+    {
+        if (
+            dist_to_player <= guard_walk_detect_range ||
+            (global.player_is_sprinting == true && dist_to_player <= guard_sprint_detect_range)
+        )
+        {
+            global.has_discovered_player2 = true;
+            is_chasing = true;
+        }
     }
 }
 
@@ -138,11 +153,54 @@ vsp = 0;
 
 
 // =====================================
-// CHASE PLAYER
-// Enemy follows behind player and avoids moving in front
+// RETURN TO SPAWN
 // =====================================
 
-if (is_chasing && player != noone)
+if (is_returning_to_spawn)
+{
+    var dist_to_spawn = point_distance(x, y, spawn_x, spawn_y);
+
+    if (dist_to_spawn > guard_return_stop_distance)
+    {
+        var return_dir = point_direction(x, y, spawn_x, spawn_y);
+
+        hsp = lengthdir_x(guard_fly_speed, return_dir);
+        vsp = lengthdir_y(guard_fly_speed, return_dir);
+
+        if (abs(spawn_x - x) > abs(spawn_y - y))
+        {
+            if (spawn_x < x) facing_dir = "left";
+            else facing_dir = "right";
+        }
+        else
+        {
+            if (spawn_y < y) facing_dir = "up";
+            else facing_dir = "down";
+        }
+    }
+    else
+    {
+        x = spawn_x;
+        y = spawn_y;
+
+        hsp = 0;
+        vsp = 0;
+
+        is_returning_to_spawn = false;
+        is_chasing = false;
+        global.has_discovered_player2 = false;
+
+        guard_patrol_direction = choose(0, 90, 180, 270);
+    }
+}
+
+
+// =====================================
+// CHASE PLAYER
+// Enemy follows behind player
+// =====================================
+
+else if (is_chasing && player != noone)
 {
     var follow_distance_x = 180;
     var follow_distance_y = 120;
@@ -151,7 +209,6 @@ if (is_chasing && player != noone)
     var target_x = player.x;
     var target_y = player.y;
 
-    // Behind target based on player's facing direction
     if (player.facing_dir == "right")
     {
         target_x = player.x - follow_distance_x;
@@ -173,46 +230,22 @@ if (is_chasing && player != noone)
         target_y = player.y - follow_distance_y;
     }
 
-    // Extra correction for left-facing player
-    // Prevents enemy from slipping to the front-left side
-    if (player.facing_dir == "left")
-    {
-        if (x < player.x)
-        {
-            target_x = player.x + follow_distance_x;
-        }
-    }
-
     var dist_to_target = point_distance(x, y, target_x, target_y);
 
-    // Face the player
     var dx = player.x - x;
     var dy = player.y - y;
 
     if (abs(dx) > abs(dy))
     {
-        if (dx < 0)
-        {
-            facing_dir = "left";
-        }
-        else
-        {
-            facing_dir = "right";
-        }
+        if (dx < 0) facing_dir = "left";
+        else facing_dir = "right";
     }
     else
     {
-        if (dy < 0)
-        {
-            facing_dir = "up";
-        }
-        else
-        {
-            facing_dir = "down";
-        }
+        if (dy < 0) facing_dir = "up";
+        else facing_dir = "down";
     }
 
-    // Move toward behind target
     if (dist_to_target > stop_distance)
     {
         var move_dir = point_direction(x, y, target_x, target_y);
@@ -220,35 +253,65 @@ if (is_chasing && player != noone)
         hsp = lengthdir_x(guard_fly_speed, move_dir);
         vsp = lengthdir_y(guard_fly_speed, move_dir);
     }
-    else
-    {
-        hsp = 0;
-        vsp = 0;
-    }
 }
 
 // =====================================
 // PATROL RANDOMLY UNTIL DETECTION
+// Smooth blocker handling
 // =====================================
 
 else
 {
-    hsp = lengthdir_x(guard_patrol_speed, guard_patrol_direction);
-    vsp = lengthdir_y(guard_patrol_speed, guard_patrol_direction);
-
     if (guard_turn_cooldown > 0)
     {
         guard_turn_cooldown--;
     }
 
-    if (place_meeting(x, y, obj_knight_blocker) && guard_turn_cooldown <= 0)
-    {
-        x -= lengthdir_x(8, guard_patrol_direction);
-        y -= lengthdir_y(8, guard_patrol_direction);
+    // Predict next position before moving
+    var move_dir = guard_patrol_direction;
 
-        guard_patrol_direction = choose(0, 90, 180, 270);
-        guard_turn_cooldown = 30;
+    var next_x = x + lengthdir_x(guard_patrol_speed, move_dir);
+    var next_y = y + lengthdir_y(guard_patrol_speed, move_dir);
+
+    // If next position hits blocker, turn before getting stuck
+    if (place_meeting(next_x, next_y, obj_knight_blocker))
+    {
+        if (guard_turn_cooldown <= 0)
+        {
+            hsp = 0;
+            vsp = 0;
+
+            // Move slightly away from blocker
+            x -= lengthdir_x(4, move_dir);
+            y -= lengthdir_y(4, move_dir);
+
+            // Choose a new direction that is not the same direction
+            var new_dir = choose(0, 90, 180, 270);
+
+            repeat (8)
+            {
+                if (new_dir != guard_patrol_direction)
+                {
+                    break;
+                }
+
+                new_dir = choose(0, 90, 180, 270);
+            }
+
+            guard_patrol_direction = new_dir;
+            guard_turn_cooldown = 20;
+        }
     }
+    else
+    {
+        hsp = lengthdir_x(guard_patrol_speed, guard_patrol_direction);
+        vsp = lengthdir_y(guard_patrol_speed, guard_patrol_direction);
+    }
+
+
+    // =====================================
+    // FACE PATROL DIRECTION
+    // =====================================
 
     if (guard_patrol_direction == 0)
     {
@@ -267,7 +330,6 @@ else
         facing_dir = "down";
     }
 }
-
 
 // =====================================
 // APPLY MOVEMENT

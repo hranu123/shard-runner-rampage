@@ -25,7 +25,8 @@ else if (move_right)
 
 
 // =====================================
-// GUN + MOVEMENT FACING DIRECTION
+// GUN AIM DIRECTION
+// Allows shooting in any direction
 // =====================================
 
 var using_gun =
@@ -34,9 +35,19 @@ var using_gun =
     global.equipped_weapon == "shotgun" ||
     global.equipped_weapon == "rpg";
 
-if (using_gun && !moving && !is_flying)
+if (using_gun)
 {
-    if (mouse_x < x)
+    gun_aim_dir = point_direction(x, y - jump_z, mouse_x, mouse_y);
+
+    if (gun_aim_dir > 45 && gun_aim_dir <= 135)
+    {
+        facing_dir = "up";
+    }
+    else if (gun_aim_dir > 225 && gun_aim_dir <= 315)
+    {
+        facing_dir = "down";
+    }
+    else if (gun_aim_dir > 135 && gun_aim_dir <= 225)
     {
         facing_dir = "left";
     }
@@ -45,8 +56,6 @@ if (using_gun && !moving && !is_flying)
         facing_dir = "right";
     }
 }
-
-
 // =====================================
 // COOLDOWNS
 // =====================================
@@ -239,12 +248,12 @@ if (!is_grounded && keyboard_check(vk_space))
 
 // =====================================
 // NORMAL MOVEMENT - NOT FLYING
-// Falling lands on ground normally
+// Ground collision only
 // =====================================
 
 if (!is_flying)
 {
-    // Vertical falling/jumping collision
+    // Vertical falling / jumping
     if (vsp != 0)
     {
         var move_y = abs(round(vsp));
@@ -272,6 +281,7 @@ if (!is_flying)
         }
     }
 
+
     // Horizontal movement
     var hsp = 0;
 
@@ -297,6 +307,7 @@ if (!is_flying)
             }
             else
             {
+                hsp = 0;
                 break;
             }
         }
@@ -306,6 +317,7 @@ if (!is_flying)
 
 // =====================================
 // FLYING
+// Ground collision only
 // =====================================
 
 if (is_flying)
@@ -358,7 +370,8 @@ if (is_flying)
         }
     }
 
-    // Flying vertical first
+
+    // Flying vertical movement
     if (fly_vsp != 0)
     {
         var fly_move_y = abs(round(fly_vsp));
@@ -387,29 +400,29 @@ if (is_flying)
         }
     }
 
-    // Flying horizontal second
-if (fly_hsp != 0)
-{
-    var fly_move_x = abs(round(fly_hsp));
-    var fly_dir_x = sign(fly_hsp);
 
-    repeat (fly_move_x)
+    // Flying horizontal movement
+    if (fly_hsp != 0)
     {
-        if (!place_meeting(x + fly_dir_x, y, obj_ground))
-        {
-            x += fly_dir_x;
-        }
-        else
-        {
-            fly_hsp = 0;
+        var fly_move_x = abs(round(fly_hsp));
+        var fly_dir_x = sign(fly_hsp);
 
-            // Do NOT push upward here.
-            // Side contact should only stop horizontal flying.
-            break;
+        repeat (fly_move_x)
+        {
+            if (!place_meeting(x + fly_dir_x, y, obj_ground))
+            {
+                x += fly_dir_x;
+            }
+            else
+            {
+                fly_hsp = 0;
+                break;
+            }
         }
     }
-}
 
+
+    // Stop flying
     if (!keyboard_check(vk_space) || fly_timer <= 0 || stamina_current <= 0)
     {
         is_flying = false;
@@ -418,13 +431,13 @@ if (fly_hsp != 0)
         is_fly_lifting = false;
 
         fly_cooldown = fly_cooldown_time;
-
         stamina_current = max(stamina_current, 0);
     }
 }
+
 // =====================================
 // FINAL GROUND STATE CHECK
-// Put this at the VERY BOTTOM of Step Event
+// Only obj_ground counts as true ground
 // =====================================
 
 is_grounded = place_meeting(x, y + 1, obj_ground);
@@ -461,12 +474,42 @@ stamina_current = clamp(stamina_current, 0, stamina_max);
 
 // =====================================
 // SPRITES
-// Smooth sprint animation fix
+// Sprite now follows gun aim direction
 // =====================================
 
 var new_sprite = sprite_index;
 var new_speed = 0;
 var manual_animation = false;
+
+var using_gun =
+    global.equipped_weapon == "pistol" ||
+    global.equipped_weapon == "rifle" ||
+    global.equipped_weapon == "shotgun" ||
+    global.equipped_weapon == "rpg";
+
+
+// If using gun, force sprite direction based on gun aim
+if (using_gun)
+{
+    gun_aim_dir = point_direction(x, y - jump_z, mouse_x, mouse_y);
+
+    if (gun_aim_dir > 45 && gun_aim_dir <= 135)
+    {
+        facing_dir = "up";
+    }
+    else if (gun_aim_dir > 225 && gun_aim_dir <= 315)
+    {
+        facing_dir = "down";
+    }
+    else if (gun_aim_dir > 135 && gun_aim_dir <= 225)
+    {
+        facing_dir = "left";
+    }
+    else
+    {
+        facing_dir = "right";
+    }
+}
 
 
 // FLYING
@@ -484,14 +527,10 @@ if (is_flying)
 // FALLING
 else if (is_falling)
 {
-    if (facing_dir == "left")
-        new_sprite = spr_main_character_left_fly;
-    else if (facing_dir == "right")
-        new_sprite = spr_main_character_right_fly;
-    else if (facing_dir == "up")
-        new_sprite = spr_main_character_up_fly;
-    else
-        new_sprite = spr_main_character_down_fly;
+    if (facing_dir == "up") new_sprite = spr_main_character_up_fly;
+    else if (facing_dir == "down") new_sprite = spr_main_character_down_fly;
+    else if (facing_dir == "left") new_sprite = spr_main_character_left_fly;
+    else new_sprite = spr_main_character_right_fly;
 
     new_speed = 0;
     manual_animation = true;
@@ -500,7 +539,9 @@ else if (is_falling)
 // JUMPING
 else if (is_jumping)
 {
-    if (facing_dir == "left") new_sprite = spr_main_character_left_fly;
+    if (facing_dir == "up") new_sprite = spr_main_character_up_fly;
+    else if (facing_dir == "down") new_sprite = spr_main_character_down_fly;
+    else if (facing_dir == "left") new_sprite = spr_main_character_left_fly;
     else new_sprite = spr_main_character_right_fly;
 
     new_speed = fly_animation_speed;
@@ -510,7 +551,9 @@ else if (is_jumping)
 else if (global.player_is_sprinting && moving && is_grounded)
 {
     if (facing_dir == "left") new_sprite = spr_main_character_left_sprint;
-    else new_sprite = spr_main_character_right_sprint;
+    else if (facing_dir == "right") new_sprite = spr_main_character_right_sprint;
+    else if (facing_dir == "up") new_sprite = spr_main_character_up_fly;
+    else new_sprite = spr_main_character_down_fly;
 
     new_speed = var_sprint_animation;
 }
@@ -519,7 +562,9 @@ else if (global.player_is_sprinting && moving && is_grounded)
 else
 {
     if (facing_dir == "left") new_sprite = spr_main_character_left_walk;
-    else new_sprite = spr_main_character_right_walk;
+    else if (facing_dir == "right") new_sprite = spr_main_character_right_walk;
+    else if (facing_dir == "up") new_sprite = spr_main_character_up_walk;
+    else new_sprite = spr_main_character_down_walk;
 
     if (moving)
     {
@@ -556,7 +601,7 @@ image_speed = new_speed;
 
 
 // =====================================
-// MANUAL FLY / FALL FRAME CONTROL ONLY
+// MANUAL FLY / FALL FRAME CONTROL
 // =====================================
 
 if (manual_animation)
@@ -573,7 +618,7 @@ if (manual_animation)
 
 
 // =====================================
-// IDLE FRAME RESET ONLY
+// IDLE FRAME RESET
 // =====================================
 
 if (!moving && !is_flying && !is_falling && !is_jumping && !global.player_is_sprinting)
@@ -798,29 +843,24 @@ if (global.selected_weapon_slot != -1)
 
 
 
-
 // =====================================
 // SHOOT WEAPON
+// Shoots toward mouse in any direction
 // =====================================
 
 if (global.equipped_weapon != noone && global.equipped_weapon != "sword" && !is_reloading)
 {
     var base_y = y - jump_z;
 
-    // Force weapon direction to only left or right
-    var dir = 0;
-
-    if (facing_dir == "left")
-    {
-        dir = 180;
-    }
-    else
-    {
-        dir = 0;
-    }
+    // Aim directly toward mouse
+    var dir = point_direction(x, base_y, mouse_x, mouse_y);
+    gun_aim_dir = dir;
 
 
-    // Default hand position values
+    // =====================================
+    // DEFAULT WEAPON POSITION VALUES
+    // =====================================
+
     var hand_right_x = 65;
     var hand_right_y = 30;
 
@@ -831,7 +871,10 @@ if (global.equipped_weapon != noone && global.equipped_weapon != "sword" && !is_
     var bullet_y_offset = 0;
 
 
-    // Weapon-specific hand position values
+    // =====================================
+    // WEAPON-SPECIFIC POSITION VALUES
+    // =====================================
+
     if (global.equipped_weapon == "pistol")
     {
         hand_right_x = pistol_right_hand_x;
@@ -878,31 +921,59 @@ if (global.equipped_weapon != noone && global.equipped_weapon != "sword" && !is_
     }
 
 
-    // Final hand position
+    // =====================================
+    // CHARACTER FACING BASED ON AIM
+    // =====================================
+
+    if (dir > 45 && dir <= 135)
+    {
+        facing_dir = "up";
+    }
+    else if (dir > 225 && dir <= 315)
+    {
+        facing_dir = "down";
+    }
+    else if (dir > 135 && dir <= 225)
+    {
+        facing_dir = "left";
+    }
+    else
+    {
+        facing_dir = "right";
+    }
+
+
+    // =====================================
+    // FINAL HAND POSITION
+    // Uses left/right hand offsets, but aim rotates freely
+    // =====================================
+
     var hand_x = x;
     var hand_y = base_y;
 
-    if (facing_dir == "right")
-    {
-        hand_x = x + hand_right_x;
-        hand_y = base_y + hand_right_y;
-    }
-    else
+    if (dir > 90 && dir < 270)
     {
         hand_x = x + hand_left_x;
         hand_y = base_y + hand_left_y;
     }
+    else
+    {
+        hand_x = x + hand_right_x;
+        hand_y = base_y + hand_right_y;
+    }
 
 
-    // Final gun/bullet position
+    // =====================================
+    // FINAL GUN / BULLET POSITION
+    // =====================================
+
     var gun_distance = 4;
 
     var gun_x = hand_x + lengthdir_x(gun_distance, dir);
-    var gun_y = hand_y;
+    var gun_y = hand_y + lengthdir_y(gun_distance, dir);
 
     var bullet_x = gun_x + lengthdir_x(barrel_distance, dir);
-    var bullet_y = gun_y + bullet_y_offset;
-
+    var bullet_y = gun_y + lengthdir_y(barrel_distance, dir) + bullet_y_offset;
 
     // PISTOL
     if (global.equipped_weapon == "pistol")
@@ -956,8 +1027,7 @@ if (global.equipped_weapon != noone && global.equipped_weapon != "sword" && !is_
 
             bullet.direction = dir;
             bullet.rpg_speed = 12;
-            bullet.explosion_sprite = spr_explosion;
-            bullet.explosion_target = obj_enemy;
+            bullet.explosion_sprite = spr_explosion
 
             rpg_current_ammo--;
         }
@@ -977,6 +1047,11 @@ if (global.equipped_weapon == "sword")
         is_sword_attacking = true;
         sword_attack_timer = sword_attack_duration;
         sword_attack_frame = 0;
+
+
+        // =====================================
+        // HIT POSITIONS
+        // =====================================
 
         var enemy_hit_x = x;
         var enemy_hit_y = y;
@@ -1005,34 +1080,81 @@ if (global.equipped_weapon == "sword")
             dummy_hit_y = y + sword_dummy_range;
         }
 
-        // Normal enemies
-        var hit_enemy = collision_circle(enemy_hit_x, enemy_hit_y, 35, obj_enemy, false, true);
-        var hit_enemy1 = collision_circle(enemy_hit_x, enemy_hit_y, 35, obj_enemy1, false, true);
 
-        // Test dummy
-        var hit_dummy = collision_circle(dummy_hit_x, dummy_hit_y, 35, obj_dummy, false, true);
+      // =====================================
+// NORMAL ENEMY DAMAGE
+// Applies sword damage to obj_enemy through obj_enemy11
+// =====================================
 
-        if (hit_enemy != noone)
+var enemy_objects = [
+    obj_enemy,
+    obj_enemy1,
+    obj_enemy2,
+    obj_enemy3,
+    obj_enemy4,
+    obj_enemy5,
+    obj_enemy6,
+    obj_enemy7,
+    obj_enemy8,
+    obj_enemy9,
+    obj_enemy10,
+    obj_enemy11
+];
+
+for (var i = 0; i < array_length(enemy_objects); i++)
+{
+    var hit_enemy = collision_circle(
+        enemy_hit_x,
+        enemy_hit_y,
+        35,
+        enemy_objects[i],
+        false,
+        true
+    );
+
+    if (hit_enemy != noone)
+    {
+        with (hit_enemy)
         {
-            with (hit_enemy)
+            enemy_health_current -= other.sword_damage;
+            enemy_damage_flash_timer = enemy_damage_flash_duration;
+        }
+    }
+}
+
+        // =====================================
+        // TEST DUMMY DAMAGE
+        // =====================================
+
+        var hit_dummy1 = collision_circle(dummy_hit_x, dummy_hit_y, 35, obj_dummy, false, true);
+
+        if (hit_dummy1 != noone)
+        {
+            with (hit_dummy1)
             {
                 enemy_health_current -= other.sword_damage;
                 enemy_damage_flash_timer = enemy_damage_flash_duration;
             }
         }
 
-        if (hit_enemy1 != noone)
+
+        var hit_dummy2 = collision_circle(dummy_hit_x, dummy_hit_y, 35, obj_dummy2, false, true);
+
+        if (hit_dummy2 != noone)
         {
-            with (hit_enemy1)
+            with (hit_dummy2)
             {
                 enemy_health_current -= other.sword_damage;
                 enemy_damage_flash_timer = enemy_damage_flash_duration;
             }
         }
 
-        if (hit_dummy != noone)
+
+        var hit_dummy3 = collision_circle(dummy_hit_x, dummy_hit_y, 35, obj_dummy3, false, true);
+
+        if (hit_dummy3 != noone)
         {
-            with (hit_dummy)
+            with (hit_dummy3)
             {
                 enemy_health_current -= other.sword_damage;
                 enemy_damage_flash_timer = enemy_damage_flash_duration;

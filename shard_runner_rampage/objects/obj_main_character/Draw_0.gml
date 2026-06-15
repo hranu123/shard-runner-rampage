@@ -38,8 +38,8 @@ draw_sprite(
 
 
 // =====================================
-// DRAW GUNS ONLY WHEN EQUIPPED WEAPON IS NOT SWORD
-// Left / Right aiming only
+// DRAW GUNS WHEN EQUIPPED
+// Rotates toward mouse in any direction
 // =====================================
 
 if (global.equipped_weapon != noone && global.equipped_weapon != "sword")
@@ -55,46 +55,37 @@ if (global.equipped_weapon != noone && global.equipped_weapon != "sword")
     {
         var base_y = y - jump_z;
 
-        var right_hand_x = 180;
-        var right_hand_y = 130;
-
-        var left_hand_x = 30;
-        var left_hand_y = 130;
-
-        var gun_distance = 4;
-
-        // Force aim direction left or right only
-        var aim_dir = 0;
-
-        if (facing_dir == "left")
-        {
-            aim_dir = 180;
-        }
-        else
-        {
-            aim_dir = 0;
-        }
+        var aim_dir = point_direction(x, base_y, mouse_x, mouse_y);
+        gun_aim_dir = aim_dir;
 
         var hand_x = x;
-        var hand_y = base_y;
+        var hand_y = base_y + 55;
 
-        if (facing_dir == "left")
+        if (facing_dir == "right")
         {
-            hand_x = x + left_hand_x;
-            hand_y = base_y + left_hand_y;
+            hand_x = x + 65;
         }
-        else
+        else if (facing_dir == "left")
         {
-            hand_x = x + right_hand_x;
-            hand_y = base_y + right_hand_y;
+            hand_x = x + 5;
+        }
+        else if (facing_dir == "up")
+        {
+            hand_x = x + 35;
+            hand_y = base_y + 35;
+        }
+        else if (facing_dir == "down")
+        {
+            hand_x = x + 35;
+            hand_y = base_y + 85;
         }
 
-        var gun_x = hand_x + lengthdir_x(gun_distance, aim_dir);
+        var gun_x = hand_x;
         var gun_y = hand_y;
 
         var gun_yscale = 1;
 
-        if (facing_dir == "left")
+        if (aim_dir > 90 && aim_dir < 270)
         {
             gun_yscale = -1;
         }

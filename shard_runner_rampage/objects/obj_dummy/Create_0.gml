@@ -21,11 +21,9 @@ enemy_damage_flash_duration = 10;
 enemy_rifle_damage = 20;
 enemy_pistol_damage = 10;
 enemy_shotgun_damage = 50;
-// Health bar settings
-dummy_health_bar_width = 360;
-dummy_health_bar_height = 34;
-dummy_health_bar_y_offset = -310;
 
+// Blocker corresponding to dummy
+linked_blocker_object = obj_dummy_blocker;
 // Death
 enemy_is_dead = false;
 // Dummy elimination message

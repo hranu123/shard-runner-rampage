@@ -68,7 +68,14 @@ is_attacking_player = false;
 attack_sprite_timer = 0;
 attack_sprite_duration = 20;
 guard_attack_animation_speed = 2;
-
 enemy_damage_cooldown = 0;
 enemy_damage_cooldown_max = 35;
 enemy_contact_damage = 10;
+
+// =====================================
+// CHASE RETURN SYSTEM
+// =====================================
+
+guard_return_distance = 900;      // Distance where guard gives up chasing
+guard_return_stop_distance = 8;   // How close to spawn before stopping
+is_returning_to_spawn = false;

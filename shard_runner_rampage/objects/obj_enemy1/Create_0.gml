@@ -1,3 +1,13 @@
+//ENEMY SPAWN POINT
+spawn_x = x;
+spawn_y = y;
+// =====================================
+// CHASE RETURN SYSTEM
+// =====================================
+
+guard_return_distance = 650;      // Distance where guard gives up chasing
+guard_return_stop_distance = 8;   // How close to spawn before stopping
+is_returning_to_spawn = false;
 // =====================================
 // ENEMY HEALTH SYSTEM
 // =====================================
